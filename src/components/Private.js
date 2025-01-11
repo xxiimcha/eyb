@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Input, Button, Typography, Card, Row, Col, Space, Alert, Divider } from 'antd';
+
+const { Title, Text } = Typography;
 
 function Private() {
     const [privateKey, setPrivateKey] = useState('');
@@ -21,7 +24,7 @@ function Private() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Batch Details Received:", data); // Log the received data
+                console.log("Batch Details Received:", data);
                 setBatchDetails(data);
             } else {
                 const errorData = await response.json();
@@ -33,50 +36,94 @@ function Private() {
     };
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Find Your Batch</h1>
+        <div style={{ textAlign: 'center', marginTop: '50px', padding: '20px' }}>
+            <Title level={2} style={{ color: '#52c41a' }}>Find Your Batch</Title>
             <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-                <input
-                    type="text"
-                    placeholder="Enter Private Key"
-                    value={privateKey}
-                    onChange={(e) => setPrivateKey(e.target.value)}
-                    style={{ padding: '10px', fontSize: '16px', width: '300px' }}
-                />
-                <button
-                    type="submit"
-                    style={{ marginLeft: '10px', padding: '10px', fontSize: '16px' }}
-                >
-                    Get Batch
-                </button>
+                <Space>
+                    <Input
+                        placeholder="Enter Private Key"
+                        value={privateKey}
+                        onChange={(e) => setPrivateKey(e.target.value)}
+                        style={{ width: '300px' }}
+                        size="large"
+                    />
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        size="large"
+                        style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+                    >
+                        Get Batch
+                    </Button>
+                </Space>
             </form>
+
+            {/* Display Error */}
+            {error && (
+                <Alert
+                    message={error}
+                    type="error"
+                    showIcon
+                    style={{ marginBottom: '20px' }}
+                />
+            )}
 
             {/* Display Batch Details */}
             {batchDetails && (
-                <div style={{ textAlign: 'left', margin: '0 auto', width: '50%' }}>
-                    <h2 style={{ color: 'green' }}>Batch Details</h2>
+                <Card
+                    title={<Title level={3} style={{ color: '#52c41a', textAlign: 'center' }}>Batch Details</Title>}
+                    style={{ textAlign: 'left', margin: '0 auto', width: '80%' }}
+                >
                     <p><strong>Batch ID:</strong> {batchDetails.batch_id}</p>
                     <p><strong>Batch Type:</strong> {batchDetails.batch_type}</p>
                     <p><strong>Year Range:</strong> {batchDetails.batch_year_range}</p>
 
-                    <h3>Users in the Same Batch:</h3>
-                    <ul>
+                    <Divider style={{ borderColor: '#52c41a' }} />
+
+                    <Title level={4} style={{ color: '#52c41a', textAlign: 'center' }}>Users in the Same Batch</Title>
+                    <Row gutter={[24, 24]} justify="center">
                         {batchDetails.users && batchDetails.users.length > 0 ? (
                             batchDetails.users.map((user, index) => (
-                                <li key={index} style={{ marginBottom: '10px' }}>
-                                    <strong>Name:</strong> {user.first_name || "N/A"} {user.middle_name || "N/A"} {user.last_name || "N/A"} <br />
-                                    <strong>Ambition:</strong> {user.ambition || "N/A"}
-                                </li>
+                                <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                                    <Card
+                                        hoverable
+                                        style={{
+                                            border: '1px solid #52c41a',
+                                            borderRadius: '8px',
+                                            textAlign: 'center',
+                                            height: '250px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                        }}
+                                        cover={
+                                            <div
+                                                style={{
+                                                    width: '100%',
+                                                    height: '150px',
+                                                    background: '#f0f0f0',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    color: '#999',
+                                                    fontSize: '16px',
+                                                }}
+                                            >
+                                                Image Placeholder
+                                            </div>
+                                        }
+                                    >
+                                        <Text style={{ fontWeight: 'bold', color: '#333' }}>{user.last_name || "N/A"}, {user.first_name || "N/A"} {user.middle_name || "N/A"}</Text><br></br>
+                                        <Text style={{ marginTop: '10px', color: '#555' }}>{user.ambition || "N/A"}</Text>
+                                    </Card>
+                                </Col>
                             ))
                         ) : (
-                            <p>No users found in this batch.</p>
+                            <Text>No users found in this batch.</Text>
                         )}
-                    </ul>
-                </div>
+                    </Row>
+                </Card>
             )}
-
-            {/* Display Error */}
-            {error && <p style={{ color: 'red', fontSize: '18px' }}>{error}</p>}
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { List, Card, Button, Typography, Space, Spin, message } from "antd";
+import { List, Card, Button, Typography, Space, Spin, message, Row, Col } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -104,34 +104,50 @@ function YearbookBatches() {
         </div>
       )}
 
-      {/* Alumni List */}
+      {/* Alumni Cards */}
       {selectedDesignation && !loading && (
         <div>
           <Title level={3}>
             {selectedBatch.batch_year_range} - {selectedDesignation}
           </Title>
-          <List
-            bordered
-            dataSource={alumni}
-            renderItem={(alumnus) => (
-              <List.Item>
-                <Space direction="vertical">
-                  <Text>
-                    <strong>Name:</strong> {alumnus.name}
-                  </Text>
-                  <Text>
-                    <strong>Address:</strong> {alumnus.address || "N/A"}
-                  </Text>
-                  <Text>
-                    <strong>Birthdate:</strong> {alumnus.birthdate}
-                  </Text>
-                  <Text>
-                    <strong>Ambition:</strong> {alumnus.ambition || "N/A"}
-                  </Text>
-                </Space>
-              </List.Item>
-            )}
-          />
+          <Row gutter={[16, 16]}>
+            {alumni.map((alumnus) => (
+              <Col key={alumnus.name} xs={24} sm={12} md={8} lg={6}>
+                <Card
+                  hoverable
+                  cover={
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        background: "#f0f0f0",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: "16px", color: "#999" }}>Image Placeholder</span>
+                    </div>
+                  }
+                >
+                  <Space direction="vertical" size="small">
+                    <Text>
+                      <strong>Name:</strong> {alumnus.name}
+                    </Text>
+                    <Text>
+                      <strong>Address:</strong> {alumnus.address || "N/A"}
+                    </Text>
+                    <Text>
+                      <strong>Birthdate:</strong> {alumnus.birthdate}
+                    </Text>
+                    <Text>
+                      <strong>Ambition:</strong> {alumnus.ambition || "N/A"}
+                    </Text>
+                  </Space>
+                </Card>
+              </Col>
+            ))}
+          </Row>
           <Button style={{ marginTop: "20px" }} onClick={() => setSelectedDesignation(null)}>
             Back
           </Button>

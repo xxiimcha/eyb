@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Select,
+  Button,
+  DatePicker,
+  Typography,
+  Row,
+  Col,
+  message,
+  Card,
+} from "antd";
 import './css/YearbookProfileForm.css';
+
+const { Title } = Typography;
+const { Option } = Select;
 
 function YearbookProfileForm() {
   const [batches, setBatches] = useState([]); // State for batches
@@ -8,21 +23,7 @@ function YearbookProfileForm() {
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
 
-  const [formData, setFormData] = useState({
-    batchId: "",
-    region: "",
-    province: "",
-    city: "",
-    barangay: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    course: "",
-    email: "",
-    contactNumber: "",
-    birthdate: "",
-    ambition: "",
-  });
+  const [form] = Form.useForm();
 
   // Fetch Batches
   useEffect(() => {
@@ -34,15 +35,14 @@ function YearbookProfileForm() {
 
   // Fetch Regions
   useEffect(() => {
-    fetch("http://localhost:5000/api/db-regions")
+    fetch("https://psgc-api.kgsoftwares.com/api/regions")
       .then((response) => response.json())
       .then((data) => setRegions(data))
       .catch((error) => console.error("Error fetching regions:", error));
   }, []);
 
-  // Fetch Provinces by Region
-  const fetchProvinces = (regionId) => {
-    fetch(`http://localhost:5000/api/db-provinces/${regionId}`)
+  const fetchProvinces = (regionCode) => {
+    fetch(`https://psgc-api.kgsoftwares.com/api/regions/${regionCode}/provinces`)
       .then((response) => response.json())
       .then((data) => {
         setProvinces(data);
@@ -52,9 +52,8 @@ function YearbookProfileForm() {
       .catch((error) => console.error("Error fetching provinces:", error));
   };
 
-  // Fetch Cities by Province
-  const fetchCities = (provinceId) => {
-    fetch(`http://localhost:5000/api/db-cities/${provinceId}`)
+  const fetchCities = (provinceCode) => {
+    fetch(`https://psgc-api.kgsoftwares.com/api/provinces/${provinceCode}/cities`)
       .then((response) => response.json())
       .then((data) => {
         setCities(data);
@@ -63,24 +62,14 @@ function YearbookProfileForm() {
       .catch((error) => console.error("Error fetching cities:", error));
   };
 
-  // Fetch Barangays by City
-  const fetchBarangays = (cityId) => {
-    fetch(`http://localhost:5000/api/db-barangays/${cityId}`)
+  const fetchBarangays = (cityCode) => {
+    fetch(`https://psgc-api.kgsoftwares.com/api/cities-municipalities/${cityCode}/barangays`)
       .then((response) => response.json())
       .then((data) => setBarangays(data))
       .catch((error) => console.error("Error fetching barangays:", error));
   };
 
-  // Handle Input Changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // Submit Form Data
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async (values) => {
     try {
       const response = await fetch("http://localhost:5000/api/yearbook-profiles", {
         method: "POST",
@@ -88,201 +77,155 @@ function YearbookProfileForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          batch_id: formData.batchId,
-          first_name: formData.firstName,
-          middle_name: formData.middleName,
-          last_name: formData.lastName,
-          course: formData.course,
-          email: formData.email,
-          contact_number: formData.contactNumber,
-          region: formData.region,
-          province: formData.province,
-          city_or_municipality: formData.city,
-          barangay: formData.barangay,
-          birthdate: formData.birthdate,
-          ambition: formData.ambition,
+          ...values,
           profile_photo: null, // Placeholder for photo logic
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert("Profile added successfully!");
+        message.success("Profile added successfully!");
         console.log("Response Data:", result);
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error}`);
+        message.error(`Error: ${error.error}`);
         console.error("Error Response:", error);
       }
     } catch (error) {
-      alert("An error occurred while submitting the form.");
+      message.error("An error occurred while submitting the form.");
       console.error("Submission Error:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Batch Dropdown */}
-      <label>Batch:</label>
-      <select
-        name="batchId"
-        value={formData.batchId}
-        onChange={handleInputChange}
-        required
+    <div style={{ padding: "40px 20px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
+      <Card
+        style={{ maxWidth: "900px", margin: "0 auto", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}
+        bodyStyle={{ padding: "40px" }}
       >
-        <option value="">Select Batch</option>
-        {batches.map((batch) => (
-          <option key={batch.batch_id} value={batch.batch_id}>
-            {batch.batch_year_range} ({batch.batch_type})
-          </option>
-        ))}
-      </select>
+        <Title level={2} style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}>
+          Yearbook Profile Form
+        </Title>
+        <Form
+          form={form}
+          layout="vertical"
+          style={{ maxWidth: "800px", margin: "0 auto" }}
+          onFinish={handleSubmit}
+        >
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <Form.Item name="batch_id" label="Batch" rules={[{ required: true, message: "Please select a batch!" }]}>
+                <Select placeholder="Select Batch">
+                  {batches.map((batch) => (
+                    <Option key={batch.batch_id} value={batch.batch_id}>
+                      {batch.batch_year_range} ({batch.batch_type})
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="region" label="Region" rules={[{ required: true, message: "Please select a region!" }]}>
+                <Select
+                  placeholder="Select Region"
+                  onChange={(value) => fetchProvinces(value)}
+                >
+                  {regions.map((region) => (
+                    <Option key={region.code} value={region.code}>
+                      {region.regionName}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
 
-      {/* Existing Fields */}
-      <label>Region:</label>
-      <select
-        name="region"
-        value={formData.region}
-        onChange={(e) => {
-          handleInputChange(e);
-          fetchProvinces(e.target.value);
-        }}
-        required
-      >
-        <option value="">Select Region</option>
-        {regions.map((region) => (
-          <option key={region.id} value={region.id}>
-            {region.name}
-          </option>
-        ))}
-      </select>
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <Form.Item name="province" label="Province" rules={[{ required: true, message: "Please select a province!" }]}>
+                <Select
+                  placeholder="Select Province"
+                  onChange={(value) => fetchCities(value)}
+                >
+                  {provinces.map((province) => (
+                    <Option key={province.code} value={province.code}>
+                      {province.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="city" label="City" rules={[{ required: true, message: "Please select a city!" }]}>
+                <Select
+                  placeholder="Select City"
+                  onChange={(value) => fetchBarangays(value)}
+                >
+                  {cities.map((city) => (
+                    <Option key={city.code} value={city.code}>
+                      {city.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
 
-      <label>Province:</label>
-      <select
-        name="province"
-        value={formData.province}
-        onChange={(e) => {
-          handleInputChange(e);
-          fetchCities(e.target.value);
-        }}
-        required
-      >
-        <option value="">Select Province</option>
-        {provinces.map((province) => (
-          <option key={province.id} value={province.id}>
-            {province.name}
-          </option>
-        ))}
-      </select>
+          <Form.Item name="barangay" label="Barangay" rules={[{ required: true, message: "Please select a barangay!" }]}>
+            <Select placeholder="Select Barangay">
+              {barangays.map((barangay) => (
+                <Option key={barangay.code} value={barangay.code}>
+                  {barangay.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-      <label>City:</label>
-      <select
-        name="city"
-        value={formData.city}
-        onChange={(e) => {
-          handleInputChange(e);
-          fetchBarangays(e.target.value);
-        }}
-        required
-      >
-        <option value="">Select City</option>
-        {cities.map((city) => (
-          <option key={city.id} value={city.id}>
-            {city.name}
-          </option>
-        ))}
-      </select>
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <Form.Item name="first_name" label="First Name" rules={[{ required: true, message: "Please enter first name!" }]}>
+                <Input placeholder="Enter First Name" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="middle_name" label="Middle Name">
+                <Input placeholder="Enter Middle Name" />
+              </Form.Item>
+            </Col>
+          </Row>
 
-      <label>Barangay:</label>
-      <select
-        name="barangay"
-        value={formData.barangay}
-        onChange={handleInputChange}
-        required
-      >
-        <option value="">Select Barangay</option>
-        {barangays.map((barangay) => (
-          <option key={barangay.id} value={barangay.id}>
-            {barangay.name}
-          </option>
-        ))}
-      </select>
+          <Form.Item name="last_name" label="Last Name" rules={[{ required: true, message: "Please enter last name!" }]}>
+            <Input placeholder="Enter Last Name" />
+          </Form.Item>
 
-      {/* Additional Fields */}
-      <label>First Name:</label>
-      <input
-        type="text"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleInputChange}
-        required
-      />
+          <Form.Item name="course" label="Course" rules={[{ required: true, message: "Please enter course!" }]}>
+            <Input placeholder="Enter Course" />
+          </Form.Item>
 
-      <label>Middle Name:</label>
-      <input
-        type="text"
-        name="middleName"
-        value={formData.middleName}
-        onChange={handleInputChange}
-        required
-      />
+          <Form.Item name="email" label="Email" rules={[{ required: true, type: "email", message: "Please enter a valid email!" }]}>
+            <Input placeholder="Enter Email" />
+          </Form.Item>
 
-      <label>Last Name:</label>
-      <input
-        type="text"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleInputChange}
-        required
-      />
+          <Form.Item name="contact_number" label="Contact Number" rules={[{ required: true, message: "Please enter contact number!" }]}>
+            <Input placeholder="Enter Contact Number" />
+          </Form.Item>
 
-      <label>Course:</label>
-      <input
-        type="text"
-        name="course"
-        value={formData.course}
-        onChange={handleInputChange}
-        required
-      />
+          <Form.Item name="birthdate" label="Birthdate" rules={[{ required: true, message: "Please select birthdate!" }]}>
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
 
-      <label>Email:</label>
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleInputChange}
-        required
-      />
+          <Form.Item name="ambition" label="Ambition" rules={[{ required: true, message: "Please enter your ambition!" }]}>
+            <Input.TextArea rows={4} placeholder="Enter Ambition" />
+          </Form.Item>
 
-      <label>Contact Number:</label>
-      <input
-        type="number"
-        minlength={11}
-        name="contactNumber"
-        value={formData.contactNumber}
-        onChange={handleInputChange}
-        required
-      />
-
-      <label>Birthdate:</label>
-      <input
-        type="date"
-        name="birthdate"
-        value={formData.birthdate}
-        onChange={handleInputChange}
-        required
-      />
-
-      <label>Ambition:</label>
-      <textarea
-        name="ambition"
-        value={formData.ambition}
-        onChange={handleInputChange}
-        required
-      ></textarea>
-
-      <button type="submit">Submit</button>
-    </form>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
   );
 }
 
