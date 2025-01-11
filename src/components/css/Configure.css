@@ -1,0 +1,45 @@
+.configure-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.configure-title {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.config-button {
+  background-color: #218838;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2em;
+  cursor: pointer;
+  width: 150px;
+  height: 50px;
+  text-align: center;
+}
+
+.config-button:hover {
+  background-color: #28a745;
+}
+
+.component-display {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,42 @@
+.main-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 200px; /* Adjust the width as needed */
+  background-color: #333; /* Sidebar background color */
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #f9f9f9; /* Background color for main content */
+  overflow-y: auto;
+}
+
+/* Example styling for the Sidebar */
+.sidebar-link {
+  padding: 10px 15px;
+  margin: 5px 0;
+  width: 100%;
+  text-align: center;
+  background-color: #555;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #777;
+}

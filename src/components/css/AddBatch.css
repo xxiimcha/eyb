@@ -1,0 +1,53 @@
+.add-page {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    font-weight: bold;
+  }
+  
+  label {
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="file"] {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+  }
+  
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  
+  .image-upload {
+    margin-top: 15px;
+  }
+  
+  button {
+    margin-top: 15px;
+    padding: 8px;
+  }
+  
+  .preview {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .preview img {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+  }

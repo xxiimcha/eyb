@@ -1,0 +1,61 @@
+.delete-page {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.form-container {
+    width: 50%;
+}
+
+.list-container {
+    width: 46%;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 8px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.student-type {
+    margin-top: 10px;
+}
+
+.image-preview {
+    margin-top: 20px;
+}
+
+.delete-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
