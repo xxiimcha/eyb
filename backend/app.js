@@ -458,29 +458,28 @@ app.get("/api/clustering-graduates-by-batch", async (req, res) => {
   `;
 
   try {
-    // Use the promisified query function
+    // Query the data
     const results = await queryAsync(query);
 
     // Prepare data for clustering
-    //const dataset = results.map((row) => [row.graduate_count]); // 2D array for k-means input
-    const dataset = results.map((row) => row.graduate_count); // 1D arraz for skmeans
+    const dataset = results.map((row) => row.graduate_count); // 1D array
     const batchLabels = results.map((row) => row.batch_year);
 
     // Perform k-means clustering with 3 clusters
     const numberOfClusters = 3;
     const clusteringResult = skmeans(dataset, numberOfClusters);
-    
-    const clusters = clusteringResult.idxs;
-    const centroids = clusteringResult.centroids;
 
-    // Prepare response with cluster assignments
+    const clusters = clusteringResult.idxs; // Cluster indices
+    const centroids = clusteringResult.centroids; // Centroids
+
+    // Prepare response
     const response = {
       clusters: [...new Set(clusters)], // Unique cluster indices
       centroids,
       data: results.map((row, index) => ({
         batch_year: batchLabels[index],
         graduate_count: row.graduate_count,
-        cluster: clusters[index], // Cluster assignment for this data point
+        cluster: clusters[index], // Cluster assignment
       })),
     };
 

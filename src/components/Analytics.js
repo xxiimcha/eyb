@@ -12,7 +12,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Card, Row, Col, Spin, Typography, Alert } from "antd";
+import { Row, Col, Card, Typography, Spin } from "antd";
+import "./Analytics.css";
+
+const { Title: AntTitle } = Typography;
 
 // Register Chart.js components
 Chart.register(
@@ -28,18 +31,13 @@ Chart.register(
   Legend
 );
 
-const { Title: AntTitle, Text } = Typography;
-
 const Analytics = () => {
-  // Refs for chart instances and canvases
   const barChartRef = useRef(null);
   const scatterChartRef = useRef(null);
   const barChartInstanceRef = useRef(null);
   const scatterChartInstanceRef = useRef(null);
 
-  // State variables for data fetching and error handling
   const [dataFetched, setDataFetched] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,16 +56,11 @@ const Analytics = () => {
             clusters: clusteringData.clusters,
             data: clusteringData.data,
           };
-
           renderCharts(combinedData);
           setDataFetched(true);
-        } else {
-          setErrorMessage("Failed to load data. Please try again later.");
         }
       } catch (error) {
-        setErrorMessage(
-          "Unable to connect to the server. Please check your backend."
-        );
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -135,9 +128,7 @@ const Analytics = () => {
                 x: parseInt(item.batch_year.split("-")[0]),
                 y: item.graduate_count,
               })),
-            backgroundColor: `rgba(${(index * 50) % 255}, ${
-              (index * 100) % 255
-            }, ${(index * 150) % 255}, 0.6)`,
+            backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.6)`,
           })),
         },
         options: {
@@ -187,29 +178,21 @@ const Analytics = () => {
     <div className="analytics-container">
       <AntTitle level={1}>Analytics Dashboard</AntTitle>
 
-      {errorMessage && <Alert message={errorMessage} type="error" showIcon />}
-
-      <Row gutter={[16, 16]}>
-        <Col span={12}>
-          <Card title="Graduates by Year">
-            {dataFetched ? (
+      <Spin spinning={!dataFetched} size="large">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card title="Graduates by Year" bordered={false}>
               <canvas ref={barChartRef} id="barChart"></canvas>
-            ) : (
-              <Spin tip="Loading data..." />
-            )}
-          </Card>
-        </Col>
+            </Card>
+          </Col>
 
-        <Col span={12}>
-          <Card title="Graduates by Batch-Year (Clusters)">
-            {dataFetched ? (
+          <Col xs={24} lg={12}>
+            <Card title="Graduates by Batch-Year (Clusters)" bordered={false}>
               <canvas ref={scatterChartRef} id="scatterChart"></canvas>
-            ) : (
-              <Spin tip="Loading data..." />
-            )}
-          </Card>
-        </Col>
-      </Row>
+            </Card>
+          </Col>
+        </Row>
+      </Spin>
     </div>
   );
 };

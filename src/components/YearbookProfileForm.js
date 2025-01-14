@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Form,
-  Input,
-  Select,
-  Button,
-  DatePicker,
-  Typography,
-  Row,
-  Col,
-  message,
-  Card,
-} from "antd";
+import { Form, Input, Select, DatePicker, Button, Row, Col, message } from "antd";
 import './css/YearbookProfileForm.css';
 
-const { Title } = Typography;
 const { Option } = Select;
+const { TextArea } = Input;
 
 function YearbookProfileForm() {
   const [batches, setBatches] = useState([]); // State for batches
@@ -35,14 +24,14 @@ function YearbookProfileForm() {
 
   // Fetch Regions
   useEffect(() => {
-    fetch("https://psgc-api.kgsoftwares.com/api/regions")
+    fetch("http://localhost:5000/api/db-regions")
       .then((response) => response.json())
       .then((data) => setRegions(data))
       .catch((error) => console.error("Error fetching regions:", error));
   }, []);
 
-  const fetchProvinces = (regionCode) => {
-    fetch(`https://psgc-api.kgsoftwares.com/api/regions/${regionCode}/provinces`)
+  const fetchProvinces = (regionId) => {
+    fetch(`http://localhost:5000/api/db-provinces/${regionId}`)
       .then((response) => response.json())
       .then((data) => {
         setProvinces(data);
@@ -52,8 +41,8 @@ function YearbookProfileForm() {
       .catch((error) => console.error("Error fetching provinces:", error));
   };
 
-  const fetchCities = (provinceCode) => {
-    fetch(`https://psgc-api.kgsoftwares.com/api/provinces/${provinceCode}/cities`)
+  const fetchCities = (provinceId) => {
+    fetch(`http://localhost:5000/api/db-cities/${provinceId}`)
       .then((response) => response.json())
       .then((data) => {
         setCities(data);
@@ -62,8 +51,8 @@ function YearbookProfileForm() {
       .catch((error) => console.error("Error fetching cities:", error));
   };
 
-  const fetchBarangays = (cityCode) => {
-    fetch(`https://psgc-api.kgsoftwares.com/api/cities-municipalities/${cityCode}/barangays`)
+  const fetchBarangays = (cityId) => {
+    fetch(`http://localhost:5000/api/db-barangays/${cityId}`)
       .then((response) => response.json())
       .then((data) => setBarangays(data))
       .catch((error) => console.error("Error fetching barangays:", error));
@@ -77,7 +66,19 @@ function YearbookProfileForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...values,
+          batch_id: values.batchId,
+          first_name: values.firstName,
+          middle_name: values.middleName,
+          last_name: values.lastName,
+          course: values.course,
+          email: values.email,
+          contact_number: values.contactNumber,
+          region: values.region,
+          province: values.province,
+          city_or_municipality: values.city,
+          barangay: values.barangay,
+          birthdate: values.birthdate.format("YYYY-MM-DD"),
+          ambition: values.ambition,
           profile_photo: null, // Placeholder for photo logic
         }),
       });
@@ -85,6 +86,7 @@ function YearbookProfileForm() {
       if (response.ok) {
         const result = await response.json();
         message.success("Profile added successfully!");
+        form.resetFields();
         console.log("Response Data:", result);
       } else {
         const error = await response.json();
@@ -98,107 +100,95 @@ function YearbookProfileForm() {
   };
 
   return (
-    <div style={{ padding: "40px 20px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      <Card
-        style={{ maxWidth: "900px", margin: "0 auto", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}
-        bodyStyle={{ padding: "40px" }}
-      >
-        <Title level={2} style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}>
-          Yearbook Profile Form
-        </Title>
+    <Row justify="center" style={{ marginTop: "20px" }}>
+      <Col xs={24} sm={20} md={16} lg={12}>
         <Form
           form={form}
           layout="vertical"
-          style={{ maxWidth: "800px", margin: "0 auto" }}
           onFinish={handleSubmit}
+          style={{ background: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}
         >
-          <Row gutter={[24, 24]}>
-            <Col span={12}>
-              <Form.Item name="batch_id" label="Batch" rules={[{ required: true, message: "Please select a batch!" }]}>
-                <Select placeholder="Select Batch">
-                  {batches.map((batch) => (
-                    <Option key={batch.batch_id} value={batch.batch_id}>
-                      {batch.batch_year_range} ({batch.batch_type})
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="region" label="Region" rules={[{ required: true, message: "Please select a region!" }]}>
-                <Select
-                  placeholder="Select Region"
-                  onChange={(value) => fetchProvinces(value)}
-                >
-                  {regions.map((region) => (
-                    <Option key={region.code} value={region.code}>
-                      {region.regionName}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item name="batchId" label="Batch" rules={[{ required: true, message: "Please select a batch!" }]}>
+            <Select placeholder="Select Batch">
+              {batches.map((batch) => (
+                <Option key={batch.batch_id} value={batch.batch_id}>
+                  {batch.batch_year_range} ({batch.batch_type})
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-          <Row gutter={[24, 24]}>
-            <Col span={12}>
-              <Form.Item name="province" label="Province" rules={[{ required: true, message: "Please select a province!" }]}>
-                <Select
-                  placeholder="Select Province"
-                  onChange={(value) => fetchCities(value)}
-                >
-                  {provinces.map((province) => (
-                    <Option key={province.code} value={province.code}>
-                      {province.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="city" label="City" rules={[{ required: true, message: "Please select a city!" }]}>
-                <Select
-                  placeholder="Select City"
-                  onChange={(value) => fetchBarangays(value)}
-                >
-                  {cities.map((city) => (
-                    <Option key={city.code} value={city.code}>
-                      {city.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item name="region" label="Region" rules={[{ required: true, message: "Please select a region!" }]}>
+            <Select
+              placeholder="Select Region"
+              onChange={(value) => {
+                form.setFieldsValue({ province: null, city: null, barangay: null });
+                fetchProvinces(value);
+              }}
+            >
+              {regions.map((region) => (
+                <Option key={region.id} value={region.id}>
+                  {region.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="province" label="Province" rules={[{ required: true, message: "Please select a province!" }]}>
+            <Select
+              placeholder="Select Province"
+              onChange={(value) => {
+                form.setFieldsValue({ city: null, barangay: null });
+                fetchCities(value);
+              }}
+            >
+              {provinces.map((province) => (
+                <Option key={province.id} value={province.id}>
+                  {province.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="city" label="City" rules={[{ required: true, message: "Please select a city!" }]}>
+            <Select
+              placeholder="Select City"
+              onChange={(value) => {
+                form.setFieldsValue({ barangay: null });
+                fetchBarangays(value);
+              }}
+            >
+              {cities.map((city) => (
+                <Option key={city.id} value={city.id}>
+                  {city.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
           <Form.Item name="barangay" label="Barangay" rules={[{ required: true, message: "Please select a barangay!" }]}>
             <Select placeholder="Select Barangay">
               {barangays.map((barangay) => (
-                <Option key={barangay.code} value={barangay.code}>
+                <Option key={barangay.id} value={barangay.id}>
                   {barangay.name}
                 </Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Row gutter={[24, 24]}>
-            <Col span={12}>
-              <Form.Item name="first_name" label="First Name" rules={[{ required: true, message: "Please enter first name!" }]}>
-                <Input placeholder="Enter First Name" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="middle_name" label="Middle Name">
-                <Input placeholder="Enter Middle Name" />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item name="firstName" label="First Name" rules={[{ required: true, message: "Please enter your first name!" }]}>
+            <Input placeholder="Enter First Name" />
+          </Form.Item>
 
-          <Form.Item name="last_name" label="Last Name" rules={[{ required: true, message: "Please enter last name!" }]}>
+          <Form.Item name="middleName" label="Middle Name" rules={[{ required: true, message: "Please enter your middle name!" }]}>
+            <Input placeholder="Enter Middle Name" />
+          </Form.Item>
+
+          <Form.Item name="lastName" label="Last Name" rules={[{ required: true, message: "Please enter your last name!" }]}>
             <Input placeholder="Enter Last Name" />
           </Form.Item>
 
-          <Form.Item name="course" label="Course" rules={[{ required: true, message: "Please enter course!" }]}>
+          <Form.Item name="course" label="Course" rules={[{ required: true, message: "Please enter your course!" }]}>
             <Input placeholder="Enter Course" />
           </Form.Item>
 
@@ -206,26 +196,26 @@ function YearbookProfileForm() {
             <Input placeholder="Enter Email" />
           </Form.Item>
 
-          <Form.Item name="contact_number" label="Contact Number" rules={[{ required: true, message: "Please enter contact number!" }]}>
-            <Input placeholder="Enter Contact Number" />
+          <Form.Item name="contactNumber" label="Contact Number" rules={[{ required: true, message: "Please enter your contact number!" }]}>
+            <Input placeholder="Enter Contact Number" type="number" />
           </Form.Item>
 
-          <Form.Item name="birthdate" label="Birthdate" rules={[{ required: true, message: "Please select birthdate!" }]}>
+          <Form.Item name="birthdate" label="Birthdate" rules={[{ required: true, message: "Please select your birthdate!" }]}>
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item name="ambition" label="Ambition" rules={[{ required: true, message: "Please enter your ambition!" }]}>
-            <Input.TextArea rows={4} placeholder="Enter Ambition" />
+            <TextArea placeholder="Enter Ambition" rows={4} />
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
               Submit
             </Button>
           </Form.Item>
         </Form>
-      </Card>
-    </div>
+      </Col>
+    </Row>
   );
 }
 
