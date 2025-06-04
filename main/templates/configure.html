@@ -1,0 +1,110 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}Configure | Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="py-3 py-lg-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h4 class="page-title mb-0">Configure</h4>
+            </div>
+            <div class="col-lg-6 text-end">
+                <ol class="breadcrumb m-0 justify-content-lg-end">
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Settings</a></li>
+                    <li class="breadcrumb-item active">Configure</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary mb-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addBatchModal">
+        <i class="mdi mdi-plus-circle"></i> Add Batch
+    </button>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light">
+            <h5 class="mb-1">Configuration List</h5>
+            <p class="text-muted small mb-0">Manage all configurable parameters here. DataTables is already enabled.</p>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="configure-table" class="table table-hover table-bordered table-striped dt-responsive nowrap w-100">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Config Name</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Site Title</td>
+                            <td>My Alumni Tracker</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td><button class="btn btn-sm btn-primary">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Email Sender</td>
+                            <td>noreply@alumni.edu</td>
+                            <td><span class="badge bg-secondary">Disabled</span></td>
+                            <td><button class="btn btn-sm btn-primary">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Batch Modal -->
+    <div class="modal fade" id="addBatchModal" tabindex="-1" aria-labelledby="addBatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBatchModalLabel">Add New Batch</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="from_year" class="form-label">From Year</label>
+                            <input type="number" class="form-control" name="from_year" id="from_year" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="to_year" class="form-label">To Year</label>
+                            <input type="number" class="form-control" name="to_year" id="to_year" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="batch_type" class="form-label">Batch Type</label>
+                            <input type="text" class="form-control" name="batch_type" id="batch_type" placeholder="e.g. Regular, Special" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- DataTables scripts -->
+<script src="{% static 'assets/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#configure-table').DataTable();
+    });
+</script>
+{% endblock %}
