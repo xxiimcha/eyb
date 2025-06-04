@@ -1,0 +1,76 @@
+{% load static %}
+<!-- partials/sidebar.html -->
+<div class="main-menu">
+    <div class="logo-box">
+        <a href="{% url 'dashboard' %}" class="logo-light">
+            <img src="{% static 'assets/images/logo-light.png' %}" alt="logo" class="logo-lg" height="22">
+            <img src="{% static 'assets/images/logo-sm.png' %}" alt="small logo" class="logo-sm" height="22">
+        </a>
+        <a href="{% url 'dashboard' %}" class="logo-dark">
+            <img src="{% static 'assets/images/logo-dark.png' %}" alt="dark logo" class="logo-lg" height="22">
+            <img src="{% static 'assets/images/logo-sm.png' %}" alt="small logo" class="logo-sm" height="22">
+        </a>
+    </div>
+
+    <div data-simplebar>
+        <ul class="app-menu">
+            <li class="menu-title">Menu</li>
+
+            <li class="menu-item">
+                <a href="{% url 'dashboard' %}" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-home-smile"></i></span>
+                    <span class="menu-text"> Dashboard </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-cog"></i></span>
+                    <span class="menu-text"> Configure </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-group"></i></span>
+                    <span class="menu-text"> Accounts </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-line-chart"></i></span>
+                    <span class="menu-text"> Analytics </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-archive"></i></span>
+                    <span class="menu-text"> Records </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-user-check"></i></span>
+                    <span class="menu-text"> User Management </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-graduation"></i></span>
+                    <span class="menu-text"> Alumni Tracker </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link waves-effect">
+                    <span class="menu-icon"><i class="bx bx-log-out"></i></span>
+                    <span class="menu-text"> Logout </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

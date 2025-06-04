@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'assets/libs/morris.js/morris.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/icons.min.css' %}">
+    <script src="{% static 'assets/js/config.js' %}"></script>
+</head>
+
+<body>
+    <div class="layout-wrapper">
+
+        <!-- Sidebar -->
+        {% include "partials/sidebar.html" %}
+
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- Topbar -->
+            {% include "partials/navbar.html" %}
+
+            <!-- Main Content -->
+            <div class="px-3">
+                {% block content %}{% endblock %}
+            </div>
+
+            <!-- Footer -->
+            {% include "partials/footer.html" %}
+        </div>
+
+    </div>
+
+    <!-- JS -->
+    <script src="{% static 'assets/js/vendor.min.js' %}"></script>
+    <script src="{% static 'assets/js/app.js' %}"></script>
+    <script src="{% static 'assets/libs/morris.js/morris.min.js' %}"></script>
+    <script src="{% static 'assets/libs/raphael/raphael.min.js' %}"></script>
+    <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
+</body>
+
+</html>

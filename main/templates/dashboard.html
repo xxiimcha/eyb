@@ -1,0 +1,31 @@
+
+<!-- dashboard.html -->
+{% extends "layout/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="py-3 py-lg-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <h4 class="page-title mb-0">Dashboard</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <i class="bx bx-layer float-end m-0 h2 text-muted"></i>
+                    <h6 class="text-muted text-uppercase mt-0">Orders</h6>
+                    <h3 class="mb-3">1,587</h3>
+                    <span class="badge bg-success me-1"> +11% </span> <span class="text-muted">From previous period</span>
+                </div>
+            </div>
+        </div>
+        <!-- Repeat for other widgets -->
+    </div>
+</div>
+{% endblock %}
