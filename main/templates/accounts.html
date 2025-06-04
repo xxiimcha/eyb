@@ -1,0 +1,74 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}Accounts | Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="py-3 py-lg-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h4 class="page-title mb-0">Accounts</h4>
+            </div>
+            <div class="col-lg-6 text-end">
+                <ol class="breadcrumb m-0 justify-content-lg-end">
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Users</a></li>
+                    <li class="breadcrumb-item active">Accounts</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'add_account' %}" class="btn btn-primary mb-3 shadow-sm">
+        <i class="mdi mdi-plus-circle"></i> Add Account
+    </a>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light">
+            <h5 class="mb-1">Account List</h5>
+            <p class="text-muted small mb-0">Below is the list of user accounts with their keys.</p>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="accounts-table" class="table table-hover table-bordered table-striped dt-responsive nowrap w-100">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Private Key</th>
+                            <th>Public Key</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Juan Dela Cruz</td>
+                            <td class="text-truncate" style="max-width: 250px;">e2349sf8234dsfdsf82394...</td>
+                            <td class="text-truncate" style="max-width: 250px;">fadsf82134rfvnsdfksaf...</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows dynamically here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'assets/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#accounts-table').DataTable({
+            responsive: true
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'layout/base.html' %}
+{% block title %}Add Student{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Add New Student</h4>
+            <a href="{% url 'account_list' %}" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to Account List
+            </a>
+        </div>
+        <div class="card-body px-4 py-4">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Name Fields -->
+                    <div class="col-md-4 mb-3">
+                        <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                        <input name="first_name" id="first_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="middle_name" class="form-label">Middle Name</label>
+                        <input name="middle_name" id="middle_name" class="form-control">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <input name="last_name" id="last_name" class="form-control" required>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input name="email" id="email" type="email" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contact" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                        <input name="contact" id="contact" class="form-control" required>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-12 mb-3">
+                        <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                        <textarea name="address" id="address" rows="2" class="form-control" required></textarea>
+                    </div>
+
+                    <!-- Academic Details -->
+                    <div class="col-md-6 mb-3">
+                        <label for="course" class="form-label">Course <span class="text-danger">*</span></label>
+                        <select name="course" id="course" class="form-select" required>
+                            <option value="">Select Course</option>
+                            <option value="BSFAS">B.S. in Fisheries and Aquatic Sciences (BSFAS)</option>
+                            <option value="BSEd-English">B.S. Ed. - Major in English</option>
+                            <option value="BSEd-Bio">B.S. Ed. - Major in Biological Science</option>
+                            <option value="BEEd">Bachelor of Elementary Education (BEEd)</option>
+                            <option value="BSHM">B.S. in Hospitality Management (BSHM)</option>
+                            <option value="BSBA">B.S. in Business Administration (BSBA)</option>
+                            <option value="BSCS">B.S. in Computer Science (BSCS)</option>
+                            <option value="BSIT">B.S. in Information Technology (BSIT)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="ambition" class="form-label">Ambition</label>
+                        <input name="ambition" id="ambition" class="form-control">
+                    </div>
+
+                    <!-- Batch and Photo -->
+                    <div class="col-md-6 mb-3">
+                        <label for="batch_id" class="form-label">Batch <span class="text-danger">*</span></label>
+                        <select name="batch_id" id="batch_id" class="form-select" required>
+                            <option value="">Select Batch</option>
+                            {% for batch in batches %}
+                                <option value="{{ batch.id }}">{{ batch.from_year }} - {{ batch.to_year }} ({{ batch.batch_type }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="photo" class="form-label">Upload Photo</label>
+                        <input type="file" name="photo" id="photo" class="form-control">
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-success px-4">
+                        <i class="fas fa-save me-1"></i> Save Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
