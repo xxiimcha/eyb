@@ -10,6 +10,27 @@ import qrcode
 import base64
 from io import BytesIO
 
+def gts(request):
+    if request.method == 'POST':
+        # Extract form data from POST
+        full_name = request.POST.get('full_name')
+        address = request.POST.get('address')
+        mobile_number = request.POST.get('mobile_number')
+        civil_status = request.POST.get('civil_status')
+        birthday = request.POST.get('birthday')
+        region = request.POST.get('region')
+        sex = request.POST.get('sex')
+        province = request.POST.get('province')
+        residence_location = request.POST.get('residence_location')
+
+        # Add more fields as needed from your template
+        # For now, we assume you're just testing this—later you can save to a model like GraduateTracerForm
+
+        messages.success(request, "Form successfully submitted. Thank you!")
+        return redirect('gts')  # Refresh page or redirect to a thank-you page if preferred
+
+    return render(request, 'gts.html')
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')  # Changed from 'email' to 'username'

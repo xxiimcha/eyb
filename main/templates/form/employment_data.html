@@ -1,0 +1,25 @@
+{# main/form/employment_data.html #}
+<h5 class="text-primary mt-4">Employment Data</h5>
+<div class="form-group">
+  <label for="employment_status">Are you presently employed?</label>
+  <select class="form-control" id="employment_status" name="employment_status" required>
+    <option value="" disabled selected>------</option>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+    <option value="never_employed">Never Employed</option>
+  </select>
+</div>
+<div id="unemployed_section" style="display:none;">
+  <div class="form-group">
+    <label>Why are you not yet employed?</label>
+    <div class="form-check"><input class="form-check-input" type="checkbox" name="unemployed_reasons" value="further_study"><label class="form-check-label">Advance or further study</label></div>
+    <!-- Add remaining reasons here -->
+  </div>
+</div>
+<div id="employed_section" style="display:none;">
+  <div class="form-group">
+    <label for="occupation">Present Occupation</label>
+    <input type="text" class="form-control" id="occupation" name="occupation">
+  </div>
+  <!-- Continue with employer details and reasons -->
+</div>

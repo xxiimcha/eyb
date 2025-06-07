@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registration Form - eYearbook</title>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Bootstrap & AdminLTE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
+  <style>
+    .hero-section {
+        text-align: center;
+        padding: 100px 20px;
+        background: linear-gradient(to right, #4A90E2, #50B3A2);
+        color: white;
+    }
+    .hero-section h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    .hero-section p {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+    .footer {
+        text-align: center;
+        padding: 15px;
+        background: #343a40;
+        color: white;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+    }
+    .form-control {
+        border-radius: 5px;
+    }
+    .btn-primary {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand font-weight-bold text-primary" href="/">eYearbook</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/student-login/">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>Welcome to the eYearbook Registration</h1>
+      <p>Please complete the form below to submit your graduate tracer profile.</p>
+    </div>
+  </section>
+
+  <!-- Main Form Content -->
+  <div class="container mt-5 mb-5">
+    {% include 'form/personal_info.html' %}
+    {% include 'form/educational_background.html' %}
+    {% include 'form/graduate_reasons.html' %}
+    {% include 'form/employment_data.html' %}
+    {% include 'form/first_job_details.html' %}
+    {% include 'form/college_curriculum_feedback.html' %}
+    {% include 'form/referrals_and_consent.html' %}
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    &copy; {{ year|default:"2025" }} eYearbook System. All rights reserved.
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const employmentStatus = document.getElementById('employment_status');
+      const unemployedSection = document.getElementById('unemployed_section');
+      const employedSection = document.getElementById('employed_section');
+
+      function toggleSections() {
+        const status = employmentStatus.value;
+        if (status === 'yes') {
+          employedSection.style.display = 'block';
+          unemployedSection.style.display = 'none';
+        } else if (status === 'no' || status === 'never_employed') {
+          employedSection.style.display = 'none';
+          unemployedSection.style.display = 'block';
+        } else {
+          employedSection.style.display = 'none';
+          unemployedSection.style.display = 'none';
+        }
+      }
+
+      if (employmentStatus) {
+        toggleSections(); // Initial load
+        employmentStatus.addEventListener('change', toggleSections);
+      }
+    });
+  </script>
+</body>
+</html>
