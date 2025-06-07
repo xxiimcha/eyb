@@ -19,9 +19,14 @@
         </div>
     </div>
 
-    <a href="{% url 'add_account' %}" class="btn btn-primary mb-3 shadow-sm">
-        <i class="mdi mdi-plus-circle"></i> Add Account
-    </a>
+    <div class="d-flex mb-3">
+        <a href="{% url 'add_account' %}" class="btn btn-primary shadow-sm">
+            <i class="mdi mdi-plus-circle"></i> Add Account
+        </a>
+        <button class="btn btn-secondary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#importCSVModal">
+            <i class="mdi mdi-file-upload"></i> Import CSV
+        </button>
+    </div>
 
     <div class="card shadow-sm border-0">
         <div class="card-header bg-light">
@@ -37,24 +42,58 @@
                             <th>Name</th>
                             <th>Private Key</th>
                             <th>Public Key</th>
+                            <th>QR Code</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for account in accounts %}
                         <tr>
-                            <td>1</td>
-                            <td>Juan Dela Cruz</td>
-                            <td class="text-truncate" style="max-width: 250px;">e2349sf8234dsfdsf82394...</td>
-                            <td class="text-truncate" style="max-width: 250px;">fadsf82134rfvnsdfksaf...</td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ account.graduate.first_name }} {{ account.graduate.last_name }}</td>
+                            <td class="text-truncate" style="max-width: 250px;">{{ account.private_key }}</td>
+                            <td class="text-truncate" style="max-width: 250px;">{{ account.public_key }}</td>
                             <td>
-                                <button class="btn btn-sm btn-primary">View</button>
+                                <img src="{{ account.qr_image }}" alt="QR Code" width="80" height="80">
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-primary">View</a>
                             </td>
                         </tr>
-                        <!-- Add more rows dynamically here -->
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div class="modal fade" id="importCSVModal" tabindex="-1" aria-labelledby="importCSVModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'import_accounts' %}" enctype="multipart/form-data" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="importCSVModalLabel">Import Accounts via CSV</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Upload a CSV file with the following columns:</p>
+                <ul class="mb-2">
+                    <li><code>first_name</code>, <code>middle_name</code>, <code>last_name</code></li>
+                    <li><code>email</code>, <code>contact</code>, <code>address</code></li>
+                    <li><code>course</code>, <code>ambition</code>, <code>batch_id</code></li>
+                </ul>
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Select CSV File</label>
+                    <input type="file" class="form-control" name="csv_file" id="csv_file" accept=".csv" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Import</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
