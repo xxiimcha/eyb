@@ -102,9 +102,58 @@ def import_accounts_view(request):
         return redirect('account_list')
 
 def add_account_view(request):
-    # Fetch batches to pass to template if needed
-    batches = [
-        {"id": 1, "from_year": 2020, "to_year": 2024, "batch_type": "Regular"},
-        {"id": 2, "from_year": 2021, "to_year": 2025, "batch_type": "Special"},
-    ]
+    batches = Batch.objects.all()
+    
+    # Prevent form usage if no batch exists
+    if not batches.exists():
+        messages.warning(request, "Please add a batch first before creating student records.")
+        return redirect('configure')  # Or any relevant redirect
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        middle_name = request.POST.get('middle_name', '')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        contact = request.POST.get('contact')
+        address = request.POST.get('address')
+        course = request.POST.get('course')
+        ambition = request.POST.get('ambition', '')
+        batch_id = request.POST.get('batch_id')
+        photo = request.FILES.get('photo', None)
+
+        try:
+            batch = Batch.objects.get(id=batch_id)
+
+            # Save Graduate first
+            graduate = Graduate.objects.create(
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                email=email,
+                contact=contact,
+                address=address,
+                course=course,
+                ambition=ambition,
+                batch=batch,
+                photo=photo
+            )
+
+            # Generate RSA Keypair
+            key = RSA.generate(2048)
+            private_key = key.export_key().decode()
+            public_key = key.publickey().export_key().decode()
+
+            # Create Account
+            Account.objects.create(
+                graduate=graduate,
+                public_key=public_key,
+                private_key=private_key
+            )
+
+            messages.success(request, "Student account successfully added.")
+            return redirect('account_list')
+
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+
     return render(request, 'accounts/add_account.html', {'batches': batches})

@@ -57,9 +57,64 @@
                                 <img src="{{ account.qr_image }}" alt="QR Code" width="80" height="80">
                             </td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-primary">View</a>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewModal{{ account.id }}">View</button>
                             </td>
                         </tr>
+
+                        <!-- View Modal -->
+                        <div class="modal fade" id="viewModal{{ account.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ account.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success text-white">
+                                        <h5 class="modal-title" id="viewModalLabel{{ account.id }}">
+                                            Graduate Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4 text-center">
+                                                {% if account.graduate.photo %}
+                                                    <img src="{{ account.graduate.photo }}" class="img-fluid rounded" style="max-height: 220px;">
+                                                {% else %}
+                                                    <div class="border rounded py-4 bg-light">
+                                                        <p>No photo uploaded.</p>
+                                                        <a href="{% url 'add_account' %}" class="btn btn-sm btn-outline-secondary">Upload Image</a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <dl class="row">
+                                                    <dt class="col-sm-4">Full Name:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.first_name }} {{ account.graduate.middle_name }} {{ account.graduate.last_name }}</dd>
+
+                                                    <dt class="col-sm-4">Email:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.email }}</dd>
+
+                                                    <dt class="col-sm-4">Contact:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.contact }}</dd>
+
+                                                    <dt class="col-sm-4">Address:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.address }}</dd>
+
+                                                    <dt class="col-sm-4">Course:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.course }}</dd>
+
+                                                    <dt class="col-sm-4">Ambition:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.ambition|default:"N/A" }}</dd>
+
+                                                    <dt class="col-sm-4">Batch:</dt>
+                                                    <dd class="col-sm-8">{{ account.graduate.batch.from_year }} - {{ account.graduate.batch.to_year }} ({{ account.graduate.batch.batch_type }})</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
