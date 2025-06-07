@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from .models import Batch
 
 def login_view(request):
     if request.method == 'POST':
@@ -22,7 +23,19 @@ def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 def configure_view(request):
-    return render(request, 'configure.html')
+    if request.method == 'POST':
+        from_year = request.POST.get('from_year')
+        to_year = request.POST.get('to_year')
+        batch_type = request.POST.get('batch_type')
+        if from_year and to_year and batch_type:
+            Batch.objects.create(
+                from_year=from_year,
+                to_year=to_year,
+                batch_type=batch_type
+            )
+            return redirect('configure')  # make sure this matches your URL name
+    batches = Batch.objects.all()
+    return render(request, 'configure.html', {'batches': batches})
 
 def accounts_view(request):
     return render(request, 'accounts.html')

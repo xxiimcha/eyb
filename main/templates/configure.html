@@ -34,27 +34,26 @@
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Config Name</th>
-                            <th>Value</th>
+                            <th>Year</th>
+                            <th>Batch Type</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Site Title</td>
-                            <td>My Alumni Tracker</td>
-                            <td><span class="badge bg-success">Active</span></td>
-                            <td><button class="btn btn-sm btn-primary">Edit</button></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Email Sender</td>
-                            <td>noreply@alumni.edu</td>
-                            <td><span class="badge bg-secondary">Disabled</span></td>
-                            <td><button class="btn btn-sm btn-primary">Edit</button></td>
-                        </tr>
+                        {% for batch in batches %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>Batch {{ batch.from_year }} - {{ batch.to_year }}</td>
+                                <td>{{ batch.batch_type }}</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><button class="btn btn-sm btn-primary">Edit</button></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No batches added yet.</td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
