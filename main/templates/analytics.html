@@ -1,0 +1,135 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="py-3 py-lg-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h4 class="page-title mb-0">Analytics Dashboard</h4>
+            </div>
+            <div class="col-lg-6 text-end">
+                <ol class="breadcrumb m-0 justify-content-lg-end">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Analytics</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Graduates</h5>
+                    <h2>{{ total_graduates }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Courses Offered</h5>
+                    <h2>{{ total_courses }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Batches</h5>
+                    <h2>{{ total_batches }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Employed Alumni</h5>
+                    <h2>{{ employed_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrollment Trends Chart -->
+    <div class="row">
+        <!-- Enrollment Trends Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Enrollment Trends</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mx-auto" style="max-width: 500px">
+                        <canvas id="enrollmentChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GTS Submission Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">GTS / Tracer Form Submissions</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mx-auto" style="max-width: 500px">
+                        <canvas id="gtsChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Enrollment Chart
+    const ctx = document.getElementById('enrollmentChart').getContext('2d');
+    const enrollmentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Graduates per Year',
+                data: {{ chart_data|safe }},
+                backgroundColor: '#4caf50'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // GTS Submission Chart
+    const gtsCtx = document.getElementById('gtsChart').getContext('2d');
+    const gtsChart = new Chart(gtsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Submitted', 'Not Submitted'],
+            datasets: [{
+                data: [{{ submitted_count }}, {{ not_submitted_count }}],
+                backgroundColor: ['#42a5f5', '#ef5350']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

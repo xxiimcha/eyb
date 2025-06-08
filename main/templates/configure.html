@@ -37,7 +37,6 @@
                             <th>Year</th>
                             <th>Batch Type</th>
                             <th>Status</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,7 +46,6 @@
                                 <td>Batch {{ batch.from_year }} - {{ batch.to_year }}</td>
                                 <td>{{ batch.batch_type }}</td>
                                 <td><span class="badge bg-success">Active</span></td>
-                                <td><button class="btn btn-sm btn-primary">Edit</button></td>
                             </tr>
                         {% empty %}
                             <tr>

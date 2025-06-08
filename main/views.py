@@ -402,3 +402,40 @@ def user_management_view(request):
 
     admins = User.objects.filter(is_staff=True).order_by('-date_joined')
     return render(request, 'user/index.html', {'admins': admins})
+
+def analytics_view(request):
+    graduates = Graduate.objects.all()
+    total_graduates = graduates.count()
+    total_courses = graduates.values('course').distinct().count()
+    total_batches = Batch.objects.count()
+
+    # Count employed graduates using related tracer_forms
+    employed_count = 0
+    submitted_count = 0
+
+    for grad in graduates:
+        tracer = grad.tracer_forms.first()
+        if tracer:
+            submitted_count += 1
+            if tracer.employment_status == 'employed':
+                employed_count += 1
+
+    not_submitted_count = total_graduates - submitted_count
+
+    # Chart: Graduates per batch
+    chart_labels = []
+    chart_data = []
+    for batch in Batch.objects.all().order_by('from_year'):
+        chart_labels.append(f"{batch.from_year}-{batch.to_year}")
+        chart_data.append(graduates.filter(batch=batch).count())
+
+    return render(request, 'analytics.html', {
+        'total_graduates': total_graduates,
+        'total_courses': total_courses,
+        'total_batches': total_batches,
+        'employed_count': employed_count,
+        'submitted_count': submitted_count,
+        'not_submitted_count': not_submitted_count,
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+    })

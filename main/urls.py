@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import (
     login_view, dashboard_view, configure_view,
-    accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form, user_management_view, student_login_view, student_profile_page
+    accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form, user_management_view, student_login_view, student_profile_page, analytics_view
 )
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
@@ -28,7 +28,8 @@ urlpatterns = [
     
     path('alumni-tracker/', alumni_tracker_view, name='alumni_tracker'),
     path('tracer/<int:graduate_id>/', view_tracer_form, name='view_tracer_form'),
-
+    
+    path('analytics/', analytics_view, name='analytics'),
     
     path('user-management/', user_management_view, name='user_management'),
 

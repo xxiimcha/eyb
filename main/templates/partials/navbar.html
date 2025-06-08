@@ -1,5 +1,14 @@
 {% load static %}
 <!-- partials/navbar.html -->
+<style>
+    .navbar-custom {
+        background-color: #fff176; /* light yellow */
+    }
+    .topbar {
+        background-color: #fff176; /* match topbar as well */
+    }
+</style>
+
 <div class="navbar-custom">
     <div class="topbar">
         <div class="topbar-menu d-flex align-items-center gap-lg-2 gap-1">
@@ -44,12 +53,13 @@
                             <span>Logout</span>
                         </button>
                     </form>
-
                 </div>
             </li>
         </ul>
     </div>
 </div>
+
+<!-- Account Modal -->
 <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form method="POST" action="">
