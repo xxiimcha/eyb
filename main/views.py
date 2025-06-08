@@ -11,6 +11,8 @@ from io import BytesIO
 from django.core.mail import send_mail
 from collections import defaultdict
 from django.db.models import Count, Q
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
@@ -286,3 +288,25 @@ def view_tracer_form(request, graduate_id):
         'graduate': graduate,
         'tracer': tracer
     })
+
+def user_management_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+        else:
+            User.objects.create(
+                username=username,
+                email=email,
+                password=make_password(password),
+                is_staff=True,
+                is_superuser=False
+            )
+            messages.success(request, "Admin account created successfully.")
+        return redirect('user_management')
+
+    admins = User.objects.filter(is_staff=True).order_by('-date_joined')
+    return render(request, 'user/index.html', {'admins': admins})

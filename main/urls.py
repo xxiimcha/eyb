@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     login_view, dashboard_view, configure_view,
-    accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form
+    accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form, user_management_view
 )
 from django.shortcuts import render
 
@@ -22,4 +22,7 @@ urlpatterns = [
     
     path('alumni-tracker/', alumni_tracker_view, name='alumni_tracker'),
     path('tracer/<int:graduate_id>/', view_tracer_form, name='view_tracer_form'),
+
+    
+    path('user-management/', user_management_view, name='user_management'),
 ]
