@@ -1,18 +1,26 @@
-from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
-import csv, io
-from .models import Graduate, Account, Batch, GraduateTracerForm
-from Crypto.PublicKey import RSA
+import csv
+import io
 import qrcode
 import base64
 from io import BytesIO
-from django.core.mail import send_mail
 from collections import defaultdict
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.db.models import Count, Q
-from django.contrib.auth.models import User
+from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+
+from Crypto.PublicKey import RSA
+
+from .models import Graduate, Account, Batch, GraduateTracerForm
 
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
@@ -212,6 +220,30 @@ def import_accounts_view(request):
                     private_key=private_key
                 )
 
+                # Generate QR code for public key
+                qr = qrcode.make(public_key)
+                buffer = BytesIO()
+                qr.save(buffer, format="PNG")
+                qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+                subject = 'Your eYearbook Account Credentials'
+                html_message = render_to_string('emails/account_credentials.html', {
+                    'graduate': graduate,
+                    'public_key': public_key,
+                    'private_key': private_key,
+                    'qr_code': qr_base64
+                })
+                plain_message = strip_tags(html_message)
+
+                send_mail(
+                    subject,
+                    plain_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [graduate.email],
+                    html_message=html_message,
+                    fail_silently=False
+                )
+
             except Exception as e:
                 messages.error(request, f"Error importing row: {row} – {e}")
                 continue
@@ -221,11 +253,10 @@ def import_accounts_view(request):
 
 def add_account_view(request):
     batches = Batch.objects.all()
-    
-    # Prevent form usage if no batch exists
+
     if not batches.exists():
         messages.warning(request, "Please add a batch first before creating student records.")
-        return redirect('configure')  # Or any relevant redirect
+        return redirect('configure')
 
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -242,7 +273,6 @@ def add_account_view(request):
         try:
             batch = Batch.objects.get(id=batch_id)
 
-            # Save Graduate first
             graduate = Graduate.objects.create(
                 first_name=first_name,
                 middle_name=middle_name,
@@ -256,16 +286,37 @@ def add_account_view(request):
                 photo=photo
             )
 
-            # Generate RSA Keypair
             key = RSA.generate(2048)
             private_key = key.export_key().decode()
             public_key = key.publickey().export_key().decode()
 
-            # Create Account
             Account.objects.create(
                 graduate=graduate,
                 public_key=public_key,
                 private_key=private_key
+            )
+
+            qr = qrcode.make(public_key)
+            buffer = BytesIO()
+            qr.save(buffer, format="PNG")
+            qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+            subject = 'Your eYearbook Account Credentials'
+            html_message = render_to_string('emails/account_credentials.html', {
+                'graduate': graduate,
+                'public_key': public_key,
+                'private_key': private_key,
+                'qr_code': qr_base64
+            })
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject,
+                plain_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [graduate.email],
+                html_message=html_message,
+                fail_silently=False
             )
 
             messages.success(request, "Student account successfully added.")
