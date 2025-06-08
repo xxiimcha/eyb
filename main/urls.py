@@ -4,6 +4,7 @@ from .views import (
     accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form, user_management_view
 )
 from django.shortcuts import render
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('', login_view, name='login'),
@@ -25,4 +26,7 @@ urlpatterns = [
 
     
     path('user-management/', user_management_view, name='user_management'),
+
+    
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
 ]

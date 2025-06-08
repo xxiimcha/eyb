@@ -37,10 +37,14 @@
                         <i data-lucide="user" class="font-size-16 me-2"></i>
                         <span>My Account</span>
                     </a>
-                    <a href="#" class="dropdown-item notify-item">
-                        <i data-lucide="log-out" class="font-size-16 me-2"></i>
-                        <span>Logout</span>
-                    </a>
+                    <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item notify-item text-start w-100 border-0 bg-transparent">
+                            <i data-lucide="log-out" class="font-size-16 me-2"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+
                 </div>
             </li>
         </ul>
