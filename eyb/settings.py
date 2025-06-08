@@ -131,10 +131,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+MEDIA_URL = '/graduates/photos/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'graduates/photos')
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'charmaine.l.d.cator@gmail.com'
-EMAIL_HOST_PASSWORD = 'mwxpnzfkemynvxre'
+EMAIL_HOST_USER = 'cvsunaicyearbook@gmail.com'
+EMAIL_HOST_PASSWORD = 'ntamvvpifwydpyyp'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

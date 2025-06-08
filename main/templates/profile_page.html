@@ -1,0 +1,111 @@
+{% extends 'layout/blank.html' %}
+{% load static %}
+
+{% block title %}Graduate Yearbook{% endblock %}
+
+{% block content %}
+<style>
+    .graduate-grid img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background-color: #f0f0f0;
+    }
+
+    .graduate-card {
+        background-color: #f9f9f9;
+        text-align: center;
+        padding: 10px;
+        border-radius: 0;
+    }
+
+    .graduate-name {
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .graduate-ambition {
+        font-size: 13px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .logout-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+    }
+</style>
+
+<div class="container py-5 position-relative">
+
+    <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger logout-btn">
+            <i data-lucide="log-out" class="font-size-16 me-2"></i>
+            <span>Logout</span>
+        </button>
+    </form>
+
+    <h2 class="text-center mb-5 fw-bold">Welcome to Your Yearbook</h2>
+
+    <!-- Current Graduate Highlight -->
+    <div class="card mb-5 shadow-lg border-0 bg-light">
+        <div class="row g-0 align-items-center p-4">
+            <div class="col-md-4 text-center">
+                {% if graduate.photo %}
+                    <img src="/{{ graduate.photo }}" class="img-fluid rounded-circle" alt="Your Photo" style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'assets/images/image-placeholder.png' %}" class="img-fluid rounded-circle" alt="Default Photo" style="width: 200px; height: 200px; object-fit: cover;">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body ps-md-5">
+                    <h3 class="text-primary fw-bold">{{ graduate.first_name }} {{ graduate.middle_name }} {{ graduate.last_name }}</h3>
+                    <p class="mb-1"><strong>Course:</strong> {{ graduate.course }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ graduate.email }}</p>
+                    <p class="mb-1"><strong>Ambition:</strong> {{ graduate.ambition|default:"—" }}</p>
+                    <p class="mb-0"><strong>Batch:</strong> {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Each Course -->
+    <h3 class="text-center text-secondary mb-4 fw-semibold">Your Batchmates by Course</h3>
+
+    <ul class="nav nav-tabs mb-4" id="courseTab" role="tablist">
+        {% for course, grads in course_groups.items %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ forloop.counter }}" data-bs-toggle="tab" data-bs-target="#course-{{ forloop.counter }}" type="button" role="tab">
+                {{ course }}
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="courseTabContent">
+        {% for course, grads in course_groups.items %}
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="course-{{ forloop.counter }}" role="tabpanel">
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 graduate-grid">
+                {% for grad in grads %}
+                <div class="col">
+                    <div class="graduate-card">
+                        {% if grad.photo %}
+                            <img src="/{{ grad.photo }}" alt="{{ grad.first_name }}">
+                        {% else %}
+                            <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default Photo">
+                        {% endif %}
+                        <div class="graduate-name">{{ grad.first_name }} {{ grad.middle_name }} {{ grad.last_name }}</div>
+                        <div class="graduate-ambition">{{ grad.email|default:" " }}</div>
+                        <div class="graduate-ambition">{{ grad.ambition|default:" " }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

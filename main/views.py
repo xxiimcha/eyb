@@ -22,6 +22,47 @@ from Crypto.PublicKey import RSA
 
 from .models import Graduate, Account, Batch, GraduateTracerForm
 
+def normalize_key(key):
+    return ''.join(key.strip().split())
+
+def student_login_view(request):
+    error = None
+
+    if request.method == 'POST':
+        pasted_key = request.POST.get('private_key', '').strip()
+
+        if not pasted_key:
+            error = "Please paste your RSA private key."
+        else:
+            pasted_clean = normalize_key(pasted_key)
+            for account in Account.objects.select_related('graduate'):
+                if normalize_key(account.private_key) == pasted_clean:
+                    request.session['account_id'] = account.id
+                    request.session['graduate_id'] = account.graduate.id
+                    return redirect('student_profile')
+
+            error = "Invalid RSA private key."
+
+    return render(request, 'login.html', {'error': error})
+
+def student_profile_page(request):
+    graduate_id = request.session.get('graduate_id')
+    if not graduate_id:
+        return redirect('student_login')
+
+    graduate = Graduate.objects.get(id=graduate_id)
+    batchmates = Graduate.objects.filter(batch=graduate.batch).exclude(id=graduate.id)
+
+    # Group batchmates by course
+    course_groups = defaultdict(list)
+    for g in batchmates:
+        course_groups[g.course].append(g)
+
+    return render(request, 'profile_page.html', {
+        'graduate': graduate,
+        'course_groups': dict(course_groups)
+    })
+
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
 

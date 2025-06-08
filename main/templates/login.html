@@ -28,7 +28,26 @@
                             </a>
                         </div>
 
-                        <form method="POST" action="{% url 'login' %}">
+                        <!-- Toggle Buttons -->
+                        <div class="mb-4 text-center">
+                            <button class="btn btn-outline-primary btn-sm me-2" onclick="showStudentForm()">Student Login</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="showAdminForm()">Admin Login</button>
+                        </div>
+
+                        <!-- Student Login Form -->
+                        <form method="POST" action="{% url 'student_login' %}" id="studentForm">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="private_key">RSA Private Key</label>
+                                <textarea class="form-control" id="private_key" name="private_key" placeholder="Paste your RSA private key here" rows="5" required></textarea>
+                            </div>
+                            <div class="form-group mb-0 text-center">
+                                <button class="btn btn-primary w-100" type="submit">Login as Student</button>
+                            </div>
+                        </form>
+
+                        <!-- Admin Login Form -->
+                        <form method="POST" action="{% url 'login' %}" id="adminForm" style="display: none;">
                             {% csrf_token %}
                             <div class="form-group mb-3">
                                 <label class="form-label" for="username">Username</label>
@@ -46,7 +65,7 @@
                             </div>
 
                             <div class="form-group mb-0 text-center">
-                                <button class="btn btn-primary w-100" type="submit">Log In</button>
+                                <button class="btn btn-secondary w-100" type="submit">Login as Admin</button>
                             </div>
                         </form>
 
@@ -59,6 +78,18 @@
 
     <script src="{% static 'assets/js/vendor.min.js' %}"></script>
     <script src="{% static 'assets/js/app.js' %}"></script>
+
+    <script>
+        function showStudentForm() {
+            document.getElementById('studentForm').style.display = 'block';
+            document.getElementById('adminForm').style.display = 'none';
+        }
+
+        function showAdminForm() {
+            document.getElementById('studentForm').style.display = 'none';
+            document.getElementById('adminForm').style.display = 'block';
+        }
+    </script>
 </body>
 
 </html>
