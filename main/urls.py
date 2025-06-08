@@ -3,8 +3,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import (
     login_view, dashboard_view, configure_view,
-    accounts_view, add_account_view, import_accounts_view, gts, register_form, alumni_tracker_view, view_tracer_form, user_management_view, student_login_view, student_profile_page, analytics_view
-)
+    accounts_view, add_account_view, import_accounts_view, 
+    gts, register_form, alumni_tracker_view, view_tracer_form, 
+    user_management_view, student_login_view, student_profile_page, 
+    analytics_view, update_account)
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
 
@@ -17,6 +19,9 @@ urlpatterns = [
     path('gts/<int:graduate_id>/', gts, name='gts'),
     path('register/<int:graduate_id>/', register_form, name='register_form'),
     path('thank-you/', lambda request: render(request, 'thank_you.html'), name='thank_you'),
+
+    
+    path('account/update/', update_account, name='update_account'),
 
     path('dashboard/', dashboard_view, name='dashboard'),
     path('configure/', configure_view, name='configure'),

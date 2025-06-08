@@ -166,6 +166,29 @@ def login_view(request):
 
 @login_required
 
+def update_account(request):
+    if request.method == 'POST':
+        user = request.user
+        full_name = request.POST.get('full_name', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        if full_name:
+            name_parts = full_name.split()
+            user.first_name = name_parts[0]
+            user.last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
+
+        if password:
+            user.set_password(password)
+
+        user.save()
+        messages.success(request, 'Account updated successfully.')
+
+        # Re-login is required if password is changed
+        from django.contrib.auth import update_session_auth_hash
+        update_session_auth_hash(request, user)
+
+    return redirect('dashboard')  # or the current page
+
 def dashboard_view(request):
     graduates = Graduate.objects.all()
     total_graduates = graduates.count()
