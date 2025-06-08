@@ -1,6 +1,5 @@
 {% extends 'layout/base.html' %}
 {% load static %}
-
 {% block title %}Alumni Tracker | Admin{% endblock %}
 
 {% block content %}
@@ -35,18 +34,26 @@
                             <th>Contact</th>
                             <th>Course</th>
                             <th>Address</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for grad in graduates %}
-                        <tr>
+                        <tr class="{% if not grad.tracer_forms.exists %}table-warning{% endif %}">
                             <td>{{ forloop.counter }}</td>
                             <td>{{ grad.first_name }} {{ grad.middle_name }} {{ grad.last_name }}</td>
                             <td>{{ grad.email }}</td>
                             <td>{{ grad.contact }}</td>
                             <td>{{ grad.course }}</td>
                             <td>{{ grad.address }}</td>
+                            <td>
+                                {% if grad.tracer_forms.exists %}
+                                    <span class="badge bg-success">Submitted</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Not Submitted</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <a href="{% url 'view_tracer_form' grad.id %}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i> View
@@ -55,7 +62,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted">No graduates found.</td>
+                            <td colspan="8" class="text-center text-muted">No graduates found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
