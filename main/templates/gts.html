@@ -75,7 +75,7 @@
 
   <!-- Main Form Content -->
   <div class="container mt-5 mb-5">
-    <form method="POST" action="#">
+    <form method="POST" action="{% url 'register_form' graduate.id %}">
         {% csrf_token %}
 
         {% include 'form/personal_info.html' %}

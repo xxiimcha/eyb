@@ -1,12 +1,15 @@
 from django.urls import path
 from .views import (
     login_view, dashboard_view, configure_view,
-    accounts_view, add_account_view, import_accounts_view, gts
+    accounts_view, add_account_view, import_accounts_view, gts, register_form
 )
 
 urlpatterns = [
     path('', login_view, name='login'),
+
     path('gts/<int:graduate_id>/', gts, name='gts'),
+    path('register/<int:graduate_id>/', register_form, name='register_form'),
+
     path('dashboard/', dashboard_view, name='dashboard'),
     path('configure/', configure_view, name='configure'),
 
