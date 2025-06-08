@@ -75,13 +75,26 @@
 
   <!-- Main Form Content -->
   <div class="container mt-5 mb-5">
-    {% include 'form/personal_info.html' %}
-    {% include 'form/educational_background.html' %}
-    {% include 'form/graduate_reasons.html' %}
-    {% include 'form/employment_data.html' %}
-    {% include 'form/first_job_details.html' %}
-    {% include 'form/college_curriculum_feedback.html' %}
-    {% include 'form/referrals_and_consent.html' %}
+    <form method="POST" action="#">
+        {% csrf_token %}
+
+        {% include 'form/personal_info.html' %}
+        {% include 'form/graduate_reasons.html' %}
+        {% include 'form/employment_data.html' %}
+
+        <!-- Data Privacy -->
+        <h5 class="text-primary mt-4">Data Privacy Statement</h5>
+        <p class="text-muted">
+            By submitting this form, you acknowledge and agree that your data will be stored securely and used only for statistical and research purposes.
+        </p>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="data_privacy" required>
+            <label class="form-check-label">I agree to the Data Privacy Statement</label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-block mt-4">Submit Registration</button>
+    </form>
   </div>
 
   <!-- Footer -->
@@ -92,32 +105,5 @@
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const employmentStatus = document.getElementById('employment_status');
-      const unemployedSection = document.getElementById('unemployed_section');
-      const employedSection = document.getElementById('employed_section');
-
-      function toggleSections() {
-        const status = employmentStatus.value;
-        if (status === 'yes') {
-          employedSection.style.display = 'block';
-          unemployedSection.style.display = 'none';
-        } else if (status === 'no' || status === 'never_employed') {
-          employedSection.style.display = 'none';
-          unemployedSection.style.display = 'block';
-        } else {
-          employedSection.style.display = 'none';
-          unemployedSection.style.display = 'none';
-        }
-      }
-
-      if (employmentStatus) {
-        toggleSections(); // Initial load
-        employmentStatus.addEventListener('change', toggleSections);
-      }
-    });
-  </script>
 </body>
 </html>
