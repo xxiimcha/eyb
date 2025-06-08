@@ -9,6 +9,8 @@ import qrcode
 import base64
 from io import BytesIO
 from django.core.mail import send_mail
+from collections import defaultdict
+from django.db.models import Count, Q
 
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
@@ -112,8 +114,32 @@ def login_view(request):
     return render(request, 'login.html')
 
 @login_required
+
 def dashboard_view(request):
-    return render(request, 'dashboard.html')
+    graduates = Graduate.objects.all()
+    total_graduates = graduates.count()
+    total_submitted = graduates.filter(tracer_forms__isnull=False).distinct().count()
+    total_not_submitted = total_graduates - total_submitted
+
+    # Chart data preparation
+    course_stats = graduates.values('course').annotate(
+        submitted=Count('id', filter=Q(tracer_forms__isnull=False)),
+        not_submitted=Count('id', filter=Q(tracer_forms__isnull=True))
+    )
+
+    chart_labels = [item['course'] for item in course_stats]
+    chart_submitted = [item['submitted'] for item in course_stats]
+    chart_not_submitted = [item['not_submitted'] for item in course_stats]
+
+    return render(request, 'dashboard.html', {
+        'graduates': graduates,
+        'total_graduates': total_graduates,
+        'total_submitted': total_submitted,
+        'total_not_submitted': total_not_submitted,
+        'chart_labels': chart_labels,
+        'chart_submitted': chart_submitted,
+        'chart_not_submitted': chart_not_submitted,
+    })
 
 def configure_view(request):
     if request.method == 'POST':
