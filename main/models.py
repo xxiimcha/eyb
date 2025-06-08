@@ -33,3 +33,74 @@ class Account(models.Model):
     public_key = models.TextField()
     private_key = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class GraduateTracerForm(models.Model):
+    graduate = models.ForeignKey(Graduate, on_delete=models.CASCADE, related_name='tracer_forms')
+
+    # Personal Information
+    full_name = models.CharField(max_length=255)
+    address = models.TextField()
+    mobile_number = models.CharField(max_length=20)
+    civil_status = models.CharField(max_length=50)
+    birthday = models.DateField()
+    region = models.CharField(max_length=100)
+    sex = models.CharField(max_length=30)
+    province = models.CharField(max_length=100)
+    residence_location = models.CharField(max_length=100)
+
+    # Educational Background
+    degree = models.CharField(max_length=100)
+    specialization = models.CharField(max_length=100, blank=True)
+    college_name = models.CharField(max_length=255)
+    year_graduated = models.CharField(max_length=10)
+    honors = models.CharField(max_length=255, blank=True)
+    exam_passed = models.CharField(max_length=255, blank=True)
+    exam_date = models.DateField(blank=True, null=True)
+    exam_rating = models.CharField(max_length=20, blank=True)
+
+    # Undergraduate and Graduate Study Reasons (stored as CSV or JSON string)
+    undergrad_reasons = models.TextField(blank=True)
+    grad_reasons = models.TextField(blank=True)
+    grad_reasons_other = models.CharField(max_length=255, blank=True)
+
+    # Trainings
+    trainings = models.TextField(blank=True)
+    advance_reason = models.CharField(max_length=100, blank=True)
+
+    # Employment
+    employment_status = models.CharField(max_length=20)
+    unemployed_reasons = models.TextField(blank=True)
+
+    # Employed details
+    occupation = models.CharField(max_length=100, blank=True)
+    business_line = models.CharField(max_length=100, blank=True)
+    work_location = models.CharField(max_length=100, blank=True)
+    first_job = models.CharField(max_length=20, blank=True)
+    stay_reasons = models.TextField(blank=True)
+    job_course_relation = models.CharField(max_length=10, blank=True)
+    job_finding_time = models.CharField(max_length=20, blank=True)
+    job_accept_reasons = models.TextField(blank=True)
+    job_change_reasons = models.TextField(blank=True)
+    first_job_duration = models.CharField(max_length=30, blank=True)
+    first_job_position = models.CharField(max_length=30, blank=True)
+    current_job_position = models.CharField(max_length=30, blank=True)
+
+    current_employer_name = models.CharField(max_length=255, blank=True)
+    current_employer_address = models.TextField(blank=True)
+    current_supervisor_name = models.CharField(max_length=255, blank=True)
+    current_employer_contact = models.CharField(max_length=20, blank=True)
+
+    # Income and Curriculum Relevance
+    initial_salary = models.CharField(max_length=30, blank=True)
+    curriculum_relevance = models.CharField(max_length=10, blank=True)
+    college_competencies = models.TextField(blank=True)
+    other_skills_specified = models.CharField(max_length=255, blank=True)
+
+    # Privacy consent
+    data_privacy = models.BooleanField(default=False)
+
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Tracer Form: {self.full_name} (Graduate ID {self.graduate.id})"

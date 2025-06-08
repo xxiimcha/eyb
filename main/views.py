@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 import csv, io
@@ -10,26 +9,12 @@ import qrcode
 import base64
 from io import BytesIO
 
-def gts(request):
-    if request.method == 'POST':
-        # Extract form data from POST
-        full_name = request.POST.get('full_name')
-        address = request.POST.get('address')
-        mobile_number = request.POST.get('mobile_number')
-        civil_status = request.POST.get('civil_status')
-        birthday = request.POST.get('birthday')
-        region = request.POST.get('region')
-        sex = request.POST.get('sex')
-        province = request.POST.get('province')
-        residence_location = request.POST.get('residence_location')
+def gts(request, graduate_id):
+    graduate = get_object_or_404(Graduate, id=graduate_id)
 
-        # Add more fields as needed from your template
-        # For now, we assume you're just testing this—later you can save to a model like GraduateTracerForm
-
-        messages.success(request, "Form successfully submitted. Thank you!")
-        return redirect('gts')  # Refresh page or redirect to a thank-you page if preferred
-
-    return render(request, 'gts.html')
+    return render(request, 'gts.html', {
+        'graduate': graduate
+    })
 
 def login_view(request):
     if request.method == 'POST':
@@ -64,12 +49,15 @@ def configure_view(request):
     batches = Batch.objects.all()
     return render(request, 'configure.html', {'batches': batches})
 
-
 def accounts_view(request):
     accounts = Account.objects.select_related('graduate').all()
 
     for account in accounts:
-        qr = qrcode.make(account.public_key)  # or use any string like graduate full name
+        # Embed full URL in QR code
+        graduate_id = account.graduate.id
+        url = f"http://127.0.0.1:8000/gts/{graduate_id}"
+        qr = qrcode.make(url)
+
         buffer = BytesIO()
         qr.save(buffer, format="PNG")
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
