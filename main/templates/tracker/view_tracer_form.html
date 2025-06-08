@@ -1,0 +1,93 @@
+{% extends 'layout/base.html' %}
+{% block title %}Tracer Form Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h3 class="mb-4 border-bottom pb-2">Graduate Tracer Form Summary</h3>
+
+    {% if tracer %}
+    <div class="bg-white p-4 rounded shadow-sm">
+        <h5 class="text-primary border-bottom pb-2 mb-3">1. Personal Information</h5>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2"><strong>Full Name:</strong> {{ tracer.full_name }}</div>
+            <div class="col-md-6 mb-2"><strong>Mobile Number:</strong> {{ tracer.mobile_number }}</div>
+            <div class="col-md-6 mb-2"><strong>Civil Status:</strong> {{ tracer.civil_status }}</div>
+            <div class="col-md-6 mb-2"><strong>Birthday:</strong> {{ tracer.birthday }}</div>
+            <div class="col-md-6 mb-2"><strong>Region:</strong> {{ tracer.region }}</div>
+            <div class="col-md-6 mb-2"><strong>Sex:</strong> {{ tracer.sex }}</div>
+            <div class="col-md-6 mb-2"><strong>Province:</strong> {{ tracer.province }}</div>
+            <div class="col-md-6 mb-2"><strong>Residence Location:</strong> {{ tracer.residence_location }}</div>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">2. Educational Background</h5>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2"><strong>Degree:</strong> {{ tracer.degree }}</div>
+            <div class="col-md-6 mb-2"><strong>Specialization:</strong> {{ tracer.specialization }}</div>
+            <div class="col-md-6 mb-2"><strong>College Name:</strong> {{ tracer.college_name }}</div>
+            <div class="col-md-6 mb-2"><strong>Year Graduated:</strong> {{ tracer.year_graduated }}</div>
+            <div class="col-md-6 mb-2"><strong>Honors:</strong> {{ tracer.honors }}</div>
+            <div class="col-md-6 mb-2"><strong>Examination Passed:</strong> {{ tracer.exam_passed }}</div>
+            <div class="col-md-6 mb-2"><strong>Date of Exam:</strong> {{ tracer.exam_date }}</div>
+            <div class="col-md-6 mb-2"><strong>Rating:</strong> {{ tracer.exam_rating }}</div>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">3. Course Motivation</h5>
+        <div class="mb-3">
+            <p><strong>Undergraduate Reasons:</strong> {{ tracer.undergrad_reasons }}</p>
+            <p><strong>Graduate Reasons:</strong> {{ tracer.grad_reasons }}</p>
+            <p><strong>Other Graduate Reason:</strong> {{ tracer.grad_reasons_other }}</p>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">4. Trainings & Studies</h5>
+        <div class="mb-3">
+            <p><strong>Trainings Attended:</strong> {{ tracer.trainings }}</p>
+            <p><strong>Reason for Advance Studies:</strong> {{ tracer.advance_reason }}</p>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">5. Employment Data</h5>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2"><strong>Status:</strong> {{ tracer.employment_status }}</div>
+            <div class="col-md-6 mb-2"><strong>Unemployed Reasons:</strong> {{ tracer.unemployed_reasons }}</div>
+            <div class="col-md-6 mb-2"><strong>Occupation:</strong> {{ tracer.occupation }}</div>
+            <div class="col-md-6 mb-2"><strong>Business Line:</strong> {{ tracer.business_line }}</div>
+            <div class="col-md-6 mb-2"><strong>Work Location:</strong> {{ tracer.work_location }}</div>
+            <div class="col-md-6 mb-2"><strong>First Job:</strong> {{ tracer.first_job }}</div>
+            <div class="col-md-6 mb-2"><strong>Stay Reasons:</strong> {{ tracer.stay_reasons }}</div>
+            <div class="col-md-6 mb-2"><strong>Job Course Relation:</strong> {{ tracer.job_course_relation }}</div>
+            <div class="col-md-6 mb-2"><strong>Job Finding Time:</strong> {{ tracer.job_finding_time }}</div>
+            <div class="col-md-6 mb-2"><strong>Job Accept Reasons:</strong> {{ tracer.job_accept_reasons }}</div>
+            <div class="col-md-6 mb-2"><strong>Job Change Reasons:</strong> {{ tracer.job_change_reasons }}</div>
+            <div class="col-md-6 mb-2"><strong>First Job Duration:</strong> {{ tracer.first_job_duration }}</div>
+            <div class="col-md-6 mb-2"><strong>First Job Position:</strong> {{ tracer.first_job_position }}</div>
+            <div class="col-md-6 mb-2"><strong>Current Job Position:</strong> {{ tracer.current_job_position }}</div>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">6. Current Employer Info</h5>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2"><strong>Employer Name:</strong> {{ tracer.current_employer_name }}</div>
+            <div class="col-md-6 mb-2"><strong>Employer Address:</strong> {{ tracer.current_employer_address }}</div>
+            <div class="col-md-6 mb-2"><strong>Supervisor Name:</strong> {{ tracer.current_supervisor_name }}</div>
+            <div class="col-md-6 mb-2"><strong>Employer Contact:</strong> {{ tracer.current_employer_contact }}</div>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">7. Income and Curriculum</h5>
+        <div class="mb-3">
+            <p><strong>Initial Salary:</strong> {{ tracer.initial_salary }}</p>
+            <p><strong>Curriculum Relevance:</strong> {{ tracer.curriculum_relevance }}</p>
+            <p><strong>College Competencies:</strong> {{ tracer.college_competencies }}</p>
+            <p><strong>Other Skills:</strong> {{ tracer.other_skills_specified }}</p>
+        </div>
+
+        <h5 class="text-primary border-bottom pb-2 mb-3">8. Submission & Consent</h5>
+        <div class="mb-3">
+            <p><strong>Data Privacy Consent:</strong> {{ tracer.data_privacy|yesno:"Agreed,Not Agreed" }}</p>
+            <p><strong>Submitted At:</strong> {{ tracer.submitted_at }}</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">This graduate has not submitted a tracer form yet.</div>
+    {% endif %}
+
+    <a href="{% url 'alumni_tracker' %}" class="btn btn-secondary mt-3">← Back to Alumni Tracker</a>
+</div>
+{% endblock %}

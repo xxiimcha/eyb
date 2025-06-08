@@ -8,6 +8,7 @@ from Crypto.PublicKey import RSA
 import qrcode
 import base64
 from io import BytesIO
+from django.core.mail import send_mail
 
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
@@ -16,12 +17,11 @@ def gts(request, graduate_id):
         'graduate': graduate
     })
 
-
 def register_form(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
 
     if request.method == 'POST':
-        GraduateTracerForm.objects.create(
+        tracer_form = GraduateTracerForm.objects.create(
             graduate=graduate,
             full_name=request.POST.get('full_name'),
             address=request.POST.get('address'),
@@ -70,8 +70,30 @@ def register_form(request, graduate_id):
             data_privacy='data_privacy' in request.POST
         )
 
-        messages.success(request, "Your form has been submitted successfully.")
-        return redirect('register_form', graduate_id=graduate_id)
+        # Send summary email
+        summary = f"""
+Dear {graduate.first_name},
+
+Your Graduate Tracer Form has been successfully submitted.
+
+Summary:
+- Full Name: {tracer_form.full_name}
+- Degree: {tracer_form.degree}
+- Year Graduated: {tracer_form.year_graduated}
+- Employment Status: {tracer_form.employment_status}
+- First Job: {tracer_form.first_job}
+- Salary Range: {tracer_form.initial_salary}
+        """
+
+        send_mail(
+            subject="eYearbook Tracer Form Submitted",
+            message=summary,
+            from_email=None,
+            recipient_list=[graduate.email],
+            fail_silently=False,
+        )
+
+        return redirect('thank_you')
 
     return render(request, 'gts.html', {'graduate': graduate})
 
@@ -225,3 +247,16 @@ def add_account_view(request):
             messages.error(request, f"Error: {str(e)}")
 
     return render(request, 'accounts/add_account.html', {'batches': batches})
+
+def alumni_tracker_view(request):
+    graduates = Graduate.objects.all()
+    return render(request, 'tracker/alumni.html', {'graduates': graduates})
+
+def view_tracer_form(request, graduate_id):
+    graduate = get_object_or_404(Graduate, id=graduate_id)
+    tracer = GraduateTracerForm.objects.filter(graduate=graduate).first()
+
+    return render(request, 'tracker/view_tracer_form.html', {
+        'graduate': graduate,
+        'tracer': tracer
+    })
