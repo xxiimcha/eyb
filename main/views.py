@@ -414,17 +414,23 @@ def add_account_view(request):
                 private_key=private_key
             )
 
-            qr = qrcode.make(public_key)
+            # Generate link to graduate's GTS form
+            url = f"https://eyb.onrender.com/gts/{graduate.id}"
+
+            # Generate QR code for the URL
+            qr = qrcode.make(url)
             buffer = BytesIO()
             qr.save(buffer, format="PNG")
             qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
+            # Email content
             subject = 'Your eYearbook Account Credentials'
             html_message = render_to_string('emails/account_credentials.html', {
                 'graduate': graduate,
                 'public_key': public_key,
                 'private_key': private_key,
-                'qr_code': qr_base64
+                'qr_code': qr_base64,
+                'access_url': url  # Include URL in context
             })
             plain_message = strip_tags(html_message)
 
@@ -444,6 +450,15 @@ def add_account_view(request):
             messages.error(request, f"Error: {str(e)}")
 
     return render(request, 'accounts/add_account.html', {'batches': batches})
+
+def delete_account_view(request, id):
+    if request.method == 'POST':
+        account = get_object_or_404(Account, id=id)
+        graduate = account.graduate
+        account.delete()
+        graduate.delete()
+        messages.success(request, 'Account and associated graduate deleted successfully.')
+    return redirect('account_list')
 
 
 def alumni_tracker_view(request):

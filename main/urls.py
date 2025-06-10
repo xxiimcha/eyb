@@ -6,7 +6,7 @@ from .views import (
     accounts_view, add_account_view, import_accounts_view, 
     gts, register_form, alumni_tracker_view, view_tracer_form, 
     user_management_view, student_login_view, student_profile_page, 
-    analytics_view, update_account,edit_batch ,delete_batch)
+    analytics_view, update_account,edit_batch ,delete_batch, delete_account_view)
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
 
@@ -32,7 +32,7 @@ urlpatterns = [
     path('accounts/', accounts_view, name='account_list'),
     path('accounts/import/', import_accounts_view, name='import_accounts'),
     path('accounts/add/', add_account_view, name='add_account'),
-
+    path('accounts/delete/<int:id>/', delete_account_view, name='delete_account'),
     
     path('alumni-tracker/', alumni_tracker_view, name='alumni_tracker'),
     path('tracer/<int:graduate_id>/', view_tracer_form, name='view_tracer_form'),
