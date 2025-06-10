@@ -257,21 +257,46 @@ def delete_batch(request, id):
 
     return redirect('configure')
 
+
 def accounts_view(request):
+    # Get filter parameters from the request
+    course = request.GET.get('course')
+    batch_id = request.GET.get('batch')
+    search = request.GET.get('search')
+
+    # Initial queryset
     accounts = Account.objects.select_related('graduate').all()
 
-    for account in accounts:
-        # Embed full URL in QR code
-        graduate_id = account.graduate.id
-        url = f"http://127.0.0.1:8000/gts/{graduate_id}"
-        qr = qrcode.make(url)
+    # Apply filters
+    if course:
+        accounts = accounts.filter(graduate__course=course)
+    if batch_id:
+        accounts = accounts.filter(graduate__batch_id=batch_id)
+    if search:
+        accounts = accounts.filter(
+            Q(graduate__first_name__icontains=search) |
+            Q(graduate__last_name__icontains=search)
+        )
 
+    # Generate QR code for each account
+    for account in accounts:
+        graduate_id = account.graduate.id
+        url = f"https://eyb.onrender.com/gts/{graduate_id}"
+        qr = qrcode.make(url)
         buffer = BytesIO()
         qr.save(buffer, format="PNG")
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
         account.qr_image = f"data:image/png;base64,{qr_base64}"
 
-    return render(request, 'accounts.html', {'accounts': accounts})
+    # For dropdown filter options
+    courses = Account.objects.values_list('graduate__course', flat=True).distinct().order_by('graduate__course')
+    batches = Batch.objects.all().order_by('-from_year')
+
+    return render(request, 'accounts.html', {
+        'accounts': accounts,
+        'courses': courses,
+        'batches': batches,
+    })
 
 def import_accounts_view(request):
     if request.method == 'POST' and request.FILES.get('csv_file'):
