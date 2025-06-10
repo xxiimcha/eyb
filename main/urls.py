@@ -6,7 +6,7 @@ from .views import (
     accounts_view, add_account_view, import_accounts_view, 
     gts, register_form, alumni_tracker_view, view_tracer_form, 
     user_management_view, student_login_view, student_profile_page, 
-    analytics_view, update_account)
+    analytics_view, update_account,edit_batch ,delete_batch)
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
 
@@ -25,6 +25,9 @@ urlpatterns = [
 
     path('dashboard/', dashboard_view, name='dashboard'),
     path('configure/', configure_view, name='configure'),
+
+    path('batch/edit/<int:id>/', edit_batch, name='edit_batch'),
+    path('batch/delete/<int:id>/', delete_batch, name='delete_batch'),
 
     path('accounts/', accounts_view, name='account_list'),
     path('accounts/import/', import_accounts_view, name='import_accounts'),

@@ -37,6 +37,7 @@
                             <th>Year</th>
                             <th>Batch Type</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +47,57 @@
                                 <td>Batch {{ batch.from_year }} - {{ batch.to_year }}</td>
                                 <td>{{ batch.batch_type }}</td>
                                 <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#editBatchModal{{ batch.id }}">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </button>
+                                    <form method="POST" action="{% url 'delete_batch' batch.id %}" style="display:inline-block;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this batch?')">
+                                            <i class="mdi mdi-delete"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
+
+                            <!-- Edit Batch Modal -->
+                            <div class="modal fade" id="editBatchModal{{ batch.id }}" tabindex="-1"
+                                 aria-labelledby="editBatchModalLabel{{ batch.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{% url 'edit_batch' batch.id %}">
+                                            {% csrf_token %}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editBatchModalLabel{{ batch.id }}">Edit Batch</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="from_year_{{ batch.id }}" class="form-label">From Year</label>
+                                                    <input type="number" class="form-control" name="from_year"
+                                                           id="from_year_{{ batch.id }}" value="{{ batch.from_year }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="to_year_{{ batch.id }}" class="form-label">To Year</label>
+                                                    <input type="number" class="form-control" name="to_year"
+                                                           id="to_year_{{ batch.id }}" value="{{ batch.to_year }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="batch_type_{{ batch.id }}" class="form-label">Batch Type</label>
+                                                    <input type="text" class="form-control" name="batch_type"
+                                                           id="batch_type_{{ batch.id }}" value="{{ batch.batch_type }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         {% empty %}
                             <tr>
                                 <td colspan="5" class="text-center text-muted">No batches added yet.</td>
@@ -79,7 +130,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="batch_type" class="form-label">Batch Type</label>
-                            <input type="text" class="form-control" name="batch_type" id="batch_type" placeholder="e.g. Regular, Special" required>
+                            <input type="text" class="form-control" name="batch_type" id="batch_type"
+                                   placeholder="e.g. Regular, Mid-Year" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -94,7 +146,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<!-- DataTables scripts -->
 <script src="{% static 'assets/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
 <script src="{% static 'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>

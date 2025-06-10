@@ -230,6 +230,33 @@ def configure_view(request):
     batches = Batch.objects.all()
     return render(request, 'configure.html', {'batches': batches})
 
+def edit_batch(request, id):
+    batch = get_object_or_404(Batch, id=id)
+    
+    if request.method == 'POST':
+        from_year = request.POST.get('from_year')
+        to_year = request.POST.get('to_year')
+        batch_type = request.POST.get('batch_type')
+
+        batch.from_year = from_year
+        batch.to_year = to_year
+        batch.batch_type = batch_type
+        batch.save()
+
+        messages.success(request, 'Batch updated successfully.')
+        return redirect('configure')  # replace with your config page URL name
+
+    return redirect('configure')
+
+def delete_batch(request, id):
+    batch = get_object_or_404(Batch, id=id)
+
+    if request.method == 'POST':
+        batch.delete()
+        messages.success(request, 'Batch deleted successfully.')
+
+    return redirect('configure')
+
 def accounts_view(request):
     accounts = Account.objects.select_related('graduate').all()
 
