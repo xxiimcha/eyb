@@ -443,9 +443,40 @@ def add_account_view(request):
 
     return render(request, 'accounts/add_account.html', {'batches': batches})
 
+
 def alumni_tracker_view(request):
-    graduates = Graduate.objects.all()
-    return render(request, 'tracker/alumni.html', {'graduates': graduates})
+    course = request.GET.get('course')
+    batch_id = request.GET.get('batch')
+    status = request.GET.get('status')
+    search = request.GET.get('search')
+
+    graduates = Graduate.objects.select_related('batch').prefetch_related('tracer_forms').all()
+
+    # Apply filters
+    if course:
+        graduates = graduates.filter(course=course)
+    if batch_id:
+        graduates = graduates.filter(batch_id=batch_id)
+    if search:
+        graduates = graduates.filter(
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search) |
+            Q(middle_name__icontains=search)
+        )
+    if status == 'submitted':
+        graduates = [g for g in graduates if g.tracer_forms.exists()]
+    elif status == 'not_submitted':
+        graduates = [g for g in graduates if not g.tracer_forms.exists()]
+
+    # For filter dropdowns
+    courses = Graduate.objects.values_list('course', flat=True).distinct().order_by('course')
+    batches = Batch.objects.all().order_by('-from_year')
+
+    return render(request, 'tracker/alumni.html', {
+        'graduates': graduates,
+        'courses': courses,
+        'batches': batches,
+    })
 
 def view_tracer_form(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
