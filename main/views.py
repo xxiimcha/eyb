@@ -454,12 +454,20 @@ def user_management_view(request):
     return render(request, 'user/index.html', {'admins': admins})
 
 def analytics_view(request):
-    graduates = Graduate.objects.all()
+    selected_batch_id = request.GET.get('batch_id')
+    all_batches = Batch.objects.all().order_by('from_year')
+
+    if selected_batch_id:
+        graduates = Graduate.objects.filter(batch_id=selected_batch_id)
+        selected_batch_id = int(selected_batch_id)
+    else:
+        graduates = Graduate.objects.all()
+        selected_batch_id = None
+
     total_graduates = graduates.count()
     total_courses = graduates.values('course').distinct().count()
-    total_batches = Batch.objects.count()
+    total_batches = all_batches.count()
 
-    # Count employed graduates using related tracer_forms
     employed_count = 0
     submitted_count = 0
 
@@ -475,7 +483,10 @@ def analytics_view(request):
     # Chart: Graduates per batch
     chart_labels = []
     chart_data = []
-    for batch in Batch.objects.all().order_by('from_year'):
+
+    filtered_batches = all_batches if not selected_batch_id else all_batches.filter(id=selected_batch_id)
+
+    for batch in filtered_batches:
         chart_labels.append(f"{batch.from_year}-{batch.to_year}")
         chart_data.append(graduates.filter(batch=batch).count())
 
@@ -488,4 +499,6 @@ def analytics_view(request):
         'not_submitted_count': not_submitted_count,
         'chart_labels': chart_labels,
         'chart_data': chart_data,
+        'all_batches': all_batches,
+        'selected_batch_id': selected_batch_id,
     })
