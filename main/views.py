@@ -337,7 +337,8 @@ def import_accounts_view(request):
                 )
 
                 # Generate QR code for public key
-                qr = qrcode.make(public_key)
+                url = f"https://eyb.onrender.com/gts/{graduate.id}"
+                qr = qrcode.make(url)
                 buffer = BytesIO()
                 qr.save(buffer, format="PNG")
                 qr_base64 = base64.b64encode(buffer.getvalue()).decode()
@@ -347,7 +348,8 @@ def import_accounts_view(request):
                     'graduate': graduate,
                     'public_key': public_key,
                     'private_key': private_key,
-                    'qr_code': qr_base64
+                    'qr_code': qr_base64,
+                    'access_url': url  # Pass the direct URL to the template
                 })
                 plain_message = strip_tags(html_message)
 
