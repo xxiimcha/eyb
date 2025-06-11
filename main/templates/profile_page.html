@@ -37,17 +37,17 @@
         right: 30px;
     }
 
-    .print-grid {
+    .print-only {
         display: none;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 30px;
-        justify-items: center;
-        text-align: center;
     }
 
-    .print-item {
-        width: 100%;
-        max-width: 150px;
+    .print-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        text-align: center;
+        margin-top: 40px;
+        break-inside: avoid;
     }
 
     .print-item img {
@@ -70,38 +70,36 @@
             -webkit-print-color-adjust: exact;
         }
 
+        .no-print,
         .logout-btn,
         .nav-tabs,
-        .btn,
-        .text-end.mb-4,
-        .graduate-grid,
-        .graduate-card,
+        .tab-content > .tab-pane .graduate-grid,
         .card.mb-5 {
             display: none !important;
         }
 
-        .print-grid {
-            display: grid !important;
-        }
-
-        .tab-pane {
-            display: block !important;
-            opacity: 1 !important;
-        }
-
-        .tab-content > .tab-pane:not(.active) {
+        .print-only {
             display: block !important;
         }
 
         h2, h3 {
             text-align: center;
-            page-break-after: avoid;
+        }
+
+        .tab-content > .tab-pane {
+            display: block !important;
+            opacity: 1 !important;
+        }
+
+        .page-break {
+            page-break-after: always;
         }
     }
 </style>
 
 <div class="container py-5 position-relative">
 
+    <!-- Logout Button -->
     <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-danger logout-btn">
@@ -110,54 +108,57 @@
         </button>
     </form>
 
-    <h2 class="text-center mb-5 fw-bold">Welcome to Your Yearbook</h2>
+    <!-- Header -->
+    <h2 class="text-center mb-4 fw-bold">Welcome to Your Yearbook</h2>
 
     <!-- Print Button -->
-    <div class="text-end mb-4">
-        <button onclick="window.print()" class="btn btn-outline-primary">
-            <i data-lucide="printer" class="me-2"></i> Print Yearbook
-        </button>
+    <div class="text-end mb-4 no-print">
+        <a href="{% url 'print_yearbook' %}" target="_blank" class="btn btn-outline-secondary">
+            <i data-lucide="printer" class="me-1"></i> Open Printable PDF
+        </a>
     </div>
 
-    <!-- Current Graduate Highlight -->
+    <!-- Graduate Highlight -->
     <div class="card mb-5 shadow-lg border-0 bg-light">
         <div class="row g-0 align-items-center p-4">
             <div class="col-md-4 text-center">
                 {% if graduate.photo %}
-                    <img src="/{{ graduate.photo }}" class="img-fluid rounded-circle" alt="Your Photo" style="width: 200px; height: 200px; object-fit: cover;">
+                    <img src="/{{ graduate.photo }}" class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
                 {% else %}
-                    <img src="{% static 'assets/images/image-placeholder.png' %}" class="img-fluid rounded-circle" alt="Default Photo" style="width: 200px; height: 200px; object-fit: cover;">
+                    <img src="{% static 'assets/images/image-placeholder.png' %}" class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
                 {% endif %}
             </div>
             <div class="col-md-8">
                 <div class="card-body ps-md-5">
                     <h3 class="text-primary fw-bold">{{ graduate.first_name }} {{ graduate.middle_name }} {{ graduate.last_name }}</h3>
-                    <p class="mb-1"><strong>Course:</strong> {{ graduate.course }}</p>
-                    <p class="mb-1"><strong>Email:</strong> {{ graduate.email }}</p>
-                    <p class="mb-1"><strong>Ambition:</strong> {{ graduate.ambition|default:"—" }}</p>
-                    <p class="mb-0"><strong>Batch:</strong> {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</p>
+                    <p><strong>Course:</strong> {{ graduate.course }}</p>
+                    <p><strong>Email:</strong> {{ graduate.email }}</p>
+                    <p><strong>Ambition:</strong> {{ graduate.ambition|default:"—" }}</p>
+                    <p><strong>Batch:</strong> {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabs for Each Course -->
+    <!-- Tabs -->
     <h3 class="text-center text-secondary mb-4 fw-semibold">Your Batchmates by Course</h3>
 
-    <ul class="nav nav-tabs mb-4" id="courseTab" role="tablist">
+    <ul class="nav nav-tabs mb-4 no-print" id="courseTab" role="tablist">
         {% for course, grads in course_groups.items %}
         <li class="nav-item" role="presentation">
-            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ forloop.counter }}" data-bs-toggle="tab" data-bs-target="#course-{{ forloop.counter }}" type="button" role="tab">
+            <button class="nav-link {% if forloop.first %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#course-{{ forloop.counter }}">
                 {{ course }}
             </button>
         </li>
         {% endfor %}
     </ul>
 
+    <!-- Tab Content -->
     <div class="tab-content" id="courseTabContent">
         {% for course, grads in course_groups.items %}
-        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="course-{{ forloop.counter }}" role="tabpanel">
-            <!-- Default display for screen -->
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="course-{{ forloop.counter }}">
+
+            <!-- On-Screen Grid -->
             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 graduate-grid">
                 {% for grad in grads %}
                 <div class="col">
@@ -165,7 +166,7 @@
                         {% if grad.photo %}
                             <img src="/{{ grad.photo }}" alt="{{ grad.first_name }}">
                         {% else %}
-                            <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default Photo">
+                            <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default">
                         {% endif %}
                         <div class="graduate-name">{{ grad.first_name }} {{ grad.middle_name }} {{ grad.last_name }}</div>
                         <div class="graduate-ambition">{{ grad.ambition|default:" " }}</div>
@@ -174,21 +175,7 @@
                 {% endfor %}
             </div>
 
-            <!-- Print version display -->
-            <div class="print-grid mt-4">
-                {% for grad in grads %}
-                <div class="print-item">
-                    {% if grad.photo %}
-                        <img src="/{{ grad.photo }}" alt="{{ grad.first_name }}">
-                    {% else %}
-                        <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default Photo">
-                    {% endif %}
-                    <div class="name">{{ grad.first_name }} {{ grad.last_name }}</div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div style="page-break-after: always;"></div>
+            <div class="page-break"></div>
         </div>
         {% endfor %}
     </div>

@@ -6,7 +6,8 @@ from .views import (
     accounts_view, add_account_view, import_accounts_view, 
     gts, register_form, alumni_tracker_view, view_tracer_form, 
     user_management_view, student_login_view, student_profile_page, 
-    analytics_view, update_account,edit_batch ,delete_batch, delete_account_view)
+    analytics_view, update_account, edit_batch, delete_batch, delete_account_view, 
+    print_yearbook_view)
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
 
@@ -14,8 +15,9 @@ urlpatterns = [
     path('', login_view, name='login'),
 
     path('student-login/', student_login_view, name='student_login'),
-    path('profile/', student_profile_page, name='student_profile'),
 
+    path('profile/', student_profile_page, name='student_profile'),
+    path('print-yearbook/', print_yearbook_view, name='print_yearbook'),
     path('gts/<int:graduate_id>/', gts, name='gts'),
     path('register/<int:graduate_id>/', register_form, name='register_form'),
     path('thank-you/', lambda request: render(request, 'thank_you.html'), name='thank_you'),

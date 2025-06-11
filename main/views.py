@@ -51,14 +51,32 @@ def student_profile_page(request):
         return redirect('student_login')
 
     graduate = Graduate.objects.get(id=graduate_id)
-    batchmates = Graduate.objects.filter(batch=graduate.batch).exclude(id=graduate.id)
+    batchmates = Graduate.objects.filter(batch=graduate.batch)
 
-    # Group batchmates by course
+    # Group all batchmates (including the graduate) by course
     course_groups = defaultdict(list)
     for g in batchmates:
         course_groups[g.course].append(g)
 
     return render(request, 'profile_page.html', {
+        'graduate': graduate,
+        'course_groups': dict(course_groups)
+    })
+
+
+def print_yearbook_view(request):
+    graduate_id = request.session.get('graduate_id')
+    if not graduate_id:
+        return redirect('student_login')
+
+    graduate = Graduate.objects.get(id=graduate_id)
+    batchmates = Graduate.objects.filter(batch=graduate.batch)
+
+    course_groups = defaultdict(list)
+    for g in batchmates:
+        course_groups[g.course].append(g)
+
+    return render(request, 'yearbook/print_yearbook.html', {
         'graduate': graduate,
         'course_groups': dict(course_groups)
     })

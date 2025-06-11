@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Graduate Yearbook</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 1in;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .course-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+
+    table.yearbook-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table.yearbook-table td {
+      width: 20%;
+      vertical-align: top;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .photo {
+      width: 90px;
+      height: 90px;
+      border: 1px solid #ccc;
+      background-color: #eee;
+      margin: 0 auto;
+    }
+
+    .name {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .ambition {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #444;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Graduate Yearbook – Batch {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</h2>
+
+{% for course, grads in course_groups.items %}
+  <div class="course-title">{{ course }}</div>
+
+  <table class="yearbook-table">
+    <tr>
+    {% for grad in grads %}
+      <td>
+        {% if grad.photo %}
+          <img src="/{{ grad.photo }}" class="photo">
+        {% else %}
+          <img src="{% static 'assets/images/image-placeholder.png' %}" class="photo">
+        {% endif %}
+        <div class="name">{{ grad.first_name }} {{ grad.last_name }}</div>
+        <div class="ambition">{{ grad.ambition|default:" " }}</div>
+      </td>
+      {% if forloop.counter|divisibleby:"5" and not forloop.last %}
+    </tr><tr>
+      {% endif %}
+    {% endfor %}
+    </tr>
+  </table>
+
+  <div class="page-break"></div>
+{% endfor %}
+
+</body>
+</html>
