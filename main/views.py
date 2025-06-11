@@ -625,12 +625,11 @@ def send_reminder_email(request, graduate_id):
     # Compose and send HTML email
     email = EmailMessage(
         subject=subject,
-        body=plain_message,  # fallback text version
+        body=html_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[graduate.email]
     )
-    email.content_subtype = "html"  # now it will render the html_message as HTML
-    email.attach_alternative(html_message, "text/html")  # include HTML version
+    email.content_subtype = "html"
     email.send()
 
     messages.success(request, f"Reminder email sent to {graduate.first_name} {graduate.last_name}.")
