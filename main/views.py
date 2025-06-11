@@ -5,6 +5,8 @@ import base64
 from io import BytesIO
 from collections import defaultdict
 
+from django.views.decorators.http import require_POST
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Count, Q
@@ -359,7 +361,8 @@ def import_accounts_view(request):
                 qr = qrcode.make(url)
                 buffer = BytesIO()
                 qr.save(buffer, format="PNG")
-                qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+                buffer.seek(0)  # <-- important for proper base64 output
+                qr_base64 = base64.b64encode(buffer.read()).decode()
 
                 subject = 'Your eYearbook Account Credentials'
                 html_message = render_to_string('emails/account_credentials.html', {
@@ -386,7 +389,6 @@ def import_accounts_view(request):
 
         messages.success(request, "CSV file imported successfully.")
         return redirect('account_list')
-
 def add_account_view(request):
     batches = Batch.objects.all()
 
@@ -432,14 +434,13 @@ def add_account_view(request):
                 private_key=private_key
             )
 
-            # Generate link to graduate's GTS form
+            # Generate QR Code
             url = f"https://eyb.onrender.com/gts/{graduate.id}"
-
-            # Generate QR code for the URL
             qr = qrcode.make(url)
             buffer = BytesIO()
             qr.save(buffer, format="PNG")
-            qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+            buffer.seek(0)
+            qr_base64 = base64.b64encode(buffer.read()).decode().strip()  # <- important fix
 
             # Email content
             subject = 'Your eYearbook Account Credentials'
@@ -447,8 +448,8 @@ def add_account_view(request):
                 'graduate': graduate,
                 'public_key': public_key,
                 'private_key': private_key,
-                'qr_code': qr_base64,
-                'access_url': url  # Include URL in context
+                'qr_code': qr_base64,  # safely encoded
+                'access_url': url
             })
             plain_message = strip_tags(html_message)
 
@@ -593,3 +594,44 @@ def analytics_view(request):
         'all_batches': all_batches,
         'selected_batch_id': selected_batch_id,
     })
+
+
+@require_POST
+
+@require_POST
+def send_reminder_email(request, graduate_id):
+    graduate = get_object_or_404(Graduate, id=graduate_id)
+    account = get_object_or_404(Account, graduate=graduate)
+
+    # Regenerate QR code for the graduate's GTS form
+    url = f"https://eyb.onrender.com/gts/{graduate.id}"
+    qr = qrcode.make(url)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    buffer.seek(0)
+    qr_base64 = base64.b64encode(buffer.read()).decode().strip()  # <-- ensure no line breaks or padding issues
+
+    # Email content rendering
+    subject = 'Reminder: Complete Your Graduate Tracer Form'
+    html_message = render_to_string('emails/account_credentials.html', {
+        'graduate': graduate,
+        'public_key': account.public_key,
+        'private_key': account.private_key,
+        'qr_code': qr_base64,  # embedded as base64
+        'access_url': url
+    })
+    plain_message = strip_tags(html_message)
+
+    # Compose and send HTML email
+    email = EmailMessage(
+        subject=subject,
+        body=plain_message,  # fallback text version
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[graduate.email]
+    )
+    email.content_subtype = "html"  # now it will render the html_message as HTML
+    email.attach_alternative(html_message, "text/html")  # include HTML version
+    email.send()
+
+    messages.success(request, f"Reminder email sent to {graduate.first_name} {graduate.last_name}.")
+    return redirect('alumni_tracker')

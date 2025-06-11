@@ -94,9 +94,18 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'view_tracer_form' grad.id %}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
+                                {% if grad.tracer_forms.exists %}
+                                    <a href="{% url 'view_tracer_form' grad.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                {% else %}
+                                    <form method="POST" action="{% url 'send_reminder_email' grad.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-envelope"></i> Send Reminder
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
