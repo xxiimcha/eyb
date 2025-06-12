@@ -81,8 +81,27 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td><b>{{ account.graduate.last_name|upper }}, {{ account.graduate.first_name|upper }}</b></td>
-                            <td class="text-truncate" style="max-width: 250px;">{{ account.private_key }}</td>
-                            <td class="text-truncate" style="max-width: 250px;">{{ account.public_key }}</td>
+                            <!-- Private Key Cell -->
+                            <td style="max-width: 250px;">
+                                <div class="d-flex align-items-start justify-content-between gap-2">
+                                    <div class="text-truncate" style="flex-grow: 1;" id="privateKey{{ account.id }}">
+                                        {{ account.private_key }}
+                                    </div>
+                                    <button type="button" title="Copy to clipboard" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('privateKey{{ account.id }}')">
+                                        <i class="mdi mdi-content-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td style="max-width: 250px;">
+                                <div class="d-flex align-items-start justify-content-between gap-2">
+                                    <div class="text-truncate" style="flex-grow: 1;" id="publicKey{{ account.id }}">
+                                        {{ account.public_key }}
+                                    </div>
+                                    <button type="button" title="Copy to clipboard" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('publicKey{{ account.id }}')">
+                                        <i class="mdi mdi-content-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
                             <td>
                                 <img src="{{ account.qr_image }}" alt="QR Code" width="80" height="80">
                             </td>
@@ -195,10 +214,20 @@
 <script src="{% static 'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
 <script src="{% static 'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
 <script>
-    $(document).ready(function () {
-        $('#accounts-table').DataTable({
-            responsive: true
-        });
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.error("Element not found:", elementId);
+        return;
+    }
+
+    const text = element.textContent.trim();
+    navigator.clipboard.writeText(text).then(function () {
+        toastr.success("Copied to clipboard!");
+    }).catch(function (err) {
+        toastr.error("Failed to copy text.");
+        console.error('Error copying to clipboard:', err);
     });
+}
 </script>
 {% endblock %}
