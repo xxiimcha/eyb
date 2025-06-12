@@ -235,19 +235,32 @@ def dashboard_view(request):
         'chart_not_submitted': chart_not_submitted,
     })
 
+
 def configure_view(request):
     if request.method == 'POST':
         from_year = request.POST.get('from_year')
         to_year = request.POST.get('to_year')
         batch_type = request.POST.get('batch_type')
+
         if from_year and to_year and batch_type:
-            Batch.objects.create(
+            exists = Batch.objects.filter(
                 from_year=from_year,
                 to_year=to_year,
-                batch_type=batch_type
-            )
-            return redirect('configure')  # make sure this matches your URL name
-    batches = Batch.objects.all()
+                batch_type__iexact=batch_type.strip()
+            ).exists()
+
+            if exists:
+                messages.error(request, "Batch already exists.")
+            else:
+                Batch.objects.create(
+                    from_year=from_year,
+                    to_year=to_year,
+                    batch_type=batch_type.strip()
+                )
+                messages.success(request, "Batch added successfully.")
+        return redirect('configure')
+
+    batches = Batch.objects.all().order_by('-from_year', '-to_year')
     return render(request, 'configure.html', {'batches': batches})
 
 def edit_batch(request, id):
@@ -388,6 +401,7 @@ def import_accounts_view(request):
 
         messages.success(request, "CSV file imported successfully.")
         return redirect('account_list')
+    
 def add_account_view(request):
     batches = Batch.objects.all()
 
