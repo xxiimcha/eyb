@@ -80,7 +80,7 @@
                         {% for account in accounts %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ account.graduate.first_name }} {{ account.graduate.last_name }}</td>
+                            <td><b>{{ account.graduate.last_name|upper }}, {{ account.graduate.first_name|upper }}</b></td>
                             <td class="text-truncate" style="max-width: 250px;">{{ account.private_key }}</td>
                             <td class="text-truncate" style="max-width: 250px;">{{ account.public_key }}</td>
                             <td>

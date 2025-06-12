@@ -277,15 +277,14 @@ def delete_batch(request, id):
 
     return redirect('configure')
 
-
 def accounts_view(request):
     # Get filter parameters from the request
     course = request.GET.get('course')
     batch_id = request.GET.get('batch')
     search = request.GET.get('search')
 
-    # Initial queryset
-    accounts = Account.objects.select_related('graduate').all()
+    # Initial queryset with sorting by last name
+    accounts = Account.objects.select_related('graduate').order_by('graduate__last_name')
 
     # Apply filters
     if course:
