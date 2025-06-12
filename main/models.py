@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 class Batch(models.Model):
     from_year = models.IntegerField()
@@ -20,7 +21,7 @@ class Graduate(models.Model):
     ambition = models.CharField(max_length=255, blank=True, null=True)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
 
-    photo = models.ImageField(upload_to='graduates/photos/', blank=True, null=True)
+    photo = CloudinaryField('image', blank=True, null=True)
     qr_code = models.ImageField(upload_to='graduates/qrcodes/', blank=True, null=True)  # Optional
 
     created_at = models.DateTimeField(auto_now_add=True)
