@@ -101,7 +101,36 @@
             </div>
         </div>
     </div>
+    
+    <!-- Course-wise Graduates Chart -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Graduates Per Course</h5>
+                    <form method="GET" class="d-flex align-items-center">
+                        {% if selected_batch_id %}
+                            <input type="hidden" name="batch_id" value="{{ selected_batch_id }}">
+                        {% endif %}
+                        <select name="course" class="form-select" onchange="this.form.submit()">
+                            <option value="">All Courses</option>
+                            {% for course in all_courses %}
+                                <option value="{{ course }}" {% if selected_course == course %}selected{% endif %}>
+                                    {{ course }}
+                                </option>
+                            {% endfor %}
+                        </select>
 
+                    </form>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mx-auto" style="max-width: 700px">
+                        <canvas id="courseChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Chart.js -->
@@ -144,6 +173,25 @@
                 legend: {
                     position: 'bottom'
                 }
+            }
+        }
+    });
+
+    const courseCtx = document.getElementById('courseChart').getContext('2d');
+    const courseChart = new Chart(courseCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ course_labels|safe }},
+            datasets: [{
+                label: 'Graduates per Course',
+                data: {{ course_data|safe }},
+                backgroundColor: '#7e57c2'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
             }
         }
     });
