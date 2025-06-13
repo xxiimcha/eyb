@@ -81,7 +81,6 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td><b>{{ account.graduate.last_name|upper }}, {{ account.graduate.first_name|upper }}</b></td>
-                            <!-- Private Key Cell -->
                             <td style="max-width: 250px;">
                                 <div class="d-flex align-items-start justify-content-between gap-2">
                                     <div class="text-truncate" style="flex-grow: 1;" id="privateKey{{ account.id }}">
@@ -102,16 +101,12 @@
                                     </button>
                                 </div>
                             </td>
-                            <td>
-                                <img src="{{ account.qr_image }}" alt="QR Code" width="80" height="80">
-                            </td>
+                            <td><img src="{{ account.qr_image }}" alt="QR Code" width="80" height="80"></td>
                             <td>
                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewModal{{ account.id }}">View</button>
-                                <form method="POST" action="{% url 'delete_account' account.id %}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this account and its associated graduate?');">
+                                <form method="POST" action="{% url 'delete_account' account.id %}" class="d-inline" onsubmit="return confirm('Are you sure?');">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="mdi mdi-delete"></i> Delete
-                                    </button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="mdi mdi-delete"></i> Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -134,7 +129,7 @@
                                                 {% else %}
                                                     <div class="border rounded py-4 bg-light">
                                                         <p>No photo uploaded.</p>
-                                                        <a href="{% url 'add_account' %}" class="btn btn-sm btn-outline-secondary">Upload Image</a>
+                                                        <button class="btn btn-sm btn-outline-secondary" onclick="openUploadModal('{{ account.id }}')">Upload Image</button>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -142,22 +137,16 @@
                                                 <dl class="row">
                                                     <dt class="col-sm-4">Full Name:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.first_name }} {{ account.graduate.middle_name }} {{ account.graduate.last_name }}</dd>
-
                                                     <dt class="col-sm-4">Email:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.email }}</dd>
-
                                                     <dt class="col-sm-4">Contact:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.contact }}</dd>
-
                                                     <dt class="col-sm-4">Address:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.address }}</dd>
-
                                                     <dt class="col-sm-4">Course:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.course }}</dd>
-
                                                     <dt class="col-sm-4">Ambition:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.ambition|default:"N/A" }}</dd>
-
                                                     <dt class="col-sm-4">Batch:</dt>
                                                     <dd class="col-sm-8">{{ account.graduate.batch.from_year }} - {{ account.graduate.batch.to_year }} ({{ account.graduate.batch.batch_type }})</dd>
                                                 </dl>
@@ -170,40 +159,34 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Upload Image Modal -->
+                        <div class="modal fade" id="uploadImageModal{{ account.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{% url 'upload_photo' account.graduate.id %}" enctype="multipart/form-data" class="modal-content">
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Upload Photo for {{ account.graduate.first_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="photo{{ account.id }}" class="form-label">Choose Photo</label>
+                                            <input type="file" class="form-control" name="photo" id="photo{{ account.id }}" accept="image/*" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Upload</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Import CSV Modal -->
-<div class="modal fade" id="importCSVModal" tabindex="-1" aria-labelledby="importCSVModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form method="POST" action="{% url 'import_accounts' %}" enctype="multipart/form-data" class="modal-content">
-            {% csrf_token %}
-            <div class="modal-header">
-                <h5 class="modal-title" id="importCSVModalLabel">Import Accounts via CSV</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-muted">Upload a CSV file with the following columns:</p>
-                <ul class="mb-2">
-                    <li><code>first_name</code>, <code>middle_name</code>, <code>last_name</code></li>
-                    <li><code>email</code>, <code>contact</code>, <code>address</code></li>
-                    <li><code>course</code>, <code>ambition</code>, <code>batch_id</code></li>
-                </ul>
-                <div class="mb-3">
-                    <label for="csv_file" class="form-label">Select CSV File</label>
-                    <input type="file" class="form-control" name="csv_file" id="csv_file" accept=".csv" required>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Import</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </form>
     </div>
 </div>
 {% endblock %}
@@ -220,14 +203,21 @@ function copyToClipboard(elementId) {
         console.error("Element not found:", elementId);
         return;
     }
-
     const text = element.textContent.trim();
-    navigator.clipboard.writeText(text).then(function () {
+    navigator.clipboard.writeText(text).then(() => {
         toastr.success("Copied to clipboard!");
-    }).catch(function (err) {
+    }).catch(err => {
         toastr.error("Failed to copy text.");
         console.error('Error copying to clipboard:', err);
     });
+}
+
+function openUploadModal(id) {
+    const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal' + id));
+    if (viewModal) viewModal.hide();
+    setTimeout(() => {
+        new bootstrap.Modal(document.getElementById('uploadImageModal' + id)).show();
+    }, 300);
 }
 </script>
 {% endblock %}

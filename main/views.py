@@ -21,8 +21,16 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 
 from Crypto.PublicKey import RSA
+import cloudinary.uploader
 
 from .models import Graduate, Account, Batch, GraduateTracerForm
+
+
+cloudinary.config(
+    cloud_name='dgqogh9i9',
+    api_key='568596816871665',
+    api_secret='MJzcXGtvR1SdXPRDg-i7kg9V6Gg'
+)
 
 def normalize_key(key):
     return ''.join(key.strip().split())
@@ -419,11 +427,33 @@ def add_account_view(request):
         course = request.POST.get('course')
         ambition = request.POST.get('ambition', '')
         batch_id = request.POST.get('batch_id')
-        photo = request.FILES.get('photo', None)
+        photo_file = request.FILES.get('photo')
+
+        print("[DEBUG] Received POST data")
+        print(f"Name: {first_name} {middle_name} {last_name}, Email: {email}, Batch ID: {batch_id}")
+
+        # Check for duplicate email
+        if Graduate.objects.filter(email=email).exists():
+            messages.error(request, "An account with this email already exists.")
+            print("[ERROR] Duplicate email detected")
+            return redirect('add_account')
+
+        # Upload to Cloudinary if photo is provided
+        photo_url = None
+        if photo_file:
+            try:
+                uploaded = cloudinary.uploader.upload(photo_file)
+                photo_url = uploaded.get("secure_url")
+                print("[DEBUG] Uploaded photo to Cloudinary:", photo_url)
+            except Exception as e:
+                messages.error(request, f"Image upload failed: {str(e)}")
+                print("[ERROR] Cloudinary upload failed:", str(e))
+                return redirect('add_account')
 
         try:
             batch = Batch.objects.get(id=batch_id)
 
+            # Save graduate
             graduate = Graduate.objects.create(
                 first_name=first_name,
                 middle_name=middle_name,
@@ -434,54 +464,82 @@ def add_account_view(request):
                 course=course,
                 ambition=ambition,
                 batch=batch,
-                photo=photo
+                photo=photo_url
             )
+            print("[DEBUG] Graduate created with ID:", graduate.id)
 
+            # Generate RSA key pair
             key = RSA.generate(2048)
             private_key = key.export_key().decode()
             public_key = key.publickey().export_key().decode()
 
             Account.objects.create(
                 graduate=graduate,
-                public_key=public_key,
-                private_key=private_key
+                private_key=private_key,
+                public_key=public_key
             )
+            print("[DEBUG] Account created for graduate ID:", graduate.id)
 
             # Generate QR Code
-            url = f"https://eyb.onrender.com/gts/{graduate.id}"
-            qr = qrcode.make(url)
+            access_url = f"https://eyb.onrender.com/gts/{graduate.id}"
+            qr = qrcode.make(access_url)
             buffer = BytesIO()
             qr.save(buffer, format="PNG")
             buffer.seek(0)
-            qr_base64 = base64.b64encode(buffer.read()).decode().strip()  # <- important fix
+            qr_base64 = base64.b64encode(buffer.read()).decode().strip()
 
-            # Email content
+            # Prepare email
             subject = 'Your eYearbook Account Credentials'
             html_message = render_to_string('emails/account_credentials.html', {
                 'graduate': graduate,
                 'public_key': public_key,
                 'private_key': private_key,
-                'qr_code': qr_base64,  # safely encoded
-                'access_url': url
+                'qr_code': qr_base64,
+                'access_url': access_url
             })
             plain_message = strip_tags(html_message)
 
-            send_mail(
-                subject,
-                plain_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [graduate.email],
-                html_message=html_message,
-                fail_silently=False
-            )
+            try:
+                send_mail(
+                    subject,
+                    plain_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [graduate.email],
+                    html_message=html_message
+                )
+                print("[DEBUG] Email sent successfully to", graduate.email)
+            except Exception as e:
+                print("[WARNING] Email sending failed:", str(e))
+                messages.warning(request, "Student added, but email was not sent.")
 
             messages.success(request, "Student account successfully added.")
             return redirect('account_list')
 
+        except Batch.DoesNotExist:
+            messages.error(request, "Selected batch does not exist.")
+            print("[ERROR] Batch not found with ID:", batch_id)
+
         except Exception as e:
-            messages.error(request, f"Error: {str(e)}")
+            messages.error(request, f"An error occurred: {str(e)}")
+            print("[ERROR] Exception during account creation:", str(e))
 
     return render(request, 'accounts/add_account.html', {'batches': batches})
+
+
+@require_POST
+def upload_photo_view(request, graduate_id):
+    if request.method == 'POST':
+        graduate = Graduate.objects.get(id=graduate_id)
+        photo_file = request.FILES.get('photo')
+        if photo_file:
+            try:
+                upload_result = cloudinary.uploader.upload(photo_file)
+                graduate.photo = upload_result['secure_url']
+                graduate.save()
+                messages.success(request, "Photo uploaded successfully.")
+            except Exception as e:
+                messages.error(request, f"Photo upload failed: {str(e)}")
+    return redirect('account_list')
 
 def delete_account_view(request, id):
     if request.method == 'POST':
@@ -608,8 +666,6 @@ def analytics_view(request):
         'selected_batch_id': selected_batch_id,
     })
 
-
-@require_POST
 
 @require_POST
 def send_reminder_email(request, graduate_id):
