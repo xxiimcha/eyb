@@ -617,33 +617,22 @@ def user_management_view(request):
     admins = User.objects.filter(is_staff=True).order_by('-date_joined')
     return render(request, 'user/index.html', {'admins': admins})
 
-
 def analytics_view(request):
     selected_batch_id = request.GET.get('batch_id')
-    selected_course = request.GET.get('course')
-
     all_batches = Batch.objects.all().order_by('from_year')
-    all_courses = Graduate.objects.values_list('course', flat=True).distinct().order_by('course')
 
-    # For summary and batch chart (independent of course filter)
-    graduates_unfiltered = Graduate.objects.all()
+    graduates = Graduate.objects.all()
     if selected_batch_id:
-        graduates_unfiltered = graduates_unfiltered.filter(batch_id=selected_batch_id)
+        graduates = graduates.filter(batch_id=selected_batch_id)
         selected_batch_id = int(selected_batch_id)
 
-    # For course chart only (uses both filters)
-    graduates_filtered_by_course = graduates_unfiltered
-    if selected_course:
-        graduates_filtered_by_course = graduates_filtered_by_course.filter(course=selected_course)
-
-    # Summary Data
-    total_graduates = graduates_unfiltered.count()
-    total_courses = graduates_unfiltered.values('course').distinct().count()
+    total_graduates = graduates.count()
+    total_courses = graduates.values('course').distinct().count()
     total_batches = all_batches.count()
 
     employed_count = 0
     submitted_count = 0
-    for grad in graduates_unfiltered:
+    for grad in graduates:
         tracer = grad.tracer_forms.first()
         if tracer:
             submitted_count += 1
@@ -651,18 +640,18 @@ def analytics_view(request):
                 employed_count += 1
     not_submitted_count = total_graduates - submitted_count
 
-    # Chart 1: Graduates per batch
+    # Chart 1: Enrollment Trends (Graduates per Batch)
     chart_labels = []
     chart_data = []
     filtered_batches = all_batches if not selected_batch_id else all_batches.filter(id=selected_batch_id)
     for batch in filtered_batches:
         label = f"{batch.from_year}-{batch.to_year}"
-        count = Graduate.objects.filter(batch=batch)
+        count = Graduate.objects.filter(batch=batch).count()
         chart_labels.append(label)
-        chart_data.append(count.count())
+        chart_data.append(count)
 
-    # Chart 2: Graduates per course
-    course_aggregation = graduates_filtered_by_course.values('course').annotate(count=Count('id')).order_by('course')
+    # Chart 2: Graduates per Course (based on batch filter)
+    course_aggregation = graduates.values('course').annotate(count=Count('id')).order_by('course')
     course_labels = [entry['course'] for entry in course_aggregation]
     course_data = [entry['count'] for entry in course_aggregation]
 
@@ -679,8 +668,6 @@ def analytics_view(request):
         'course_data': json.dumps(course_data),
         'all_batches': all_batches,
         'selected_batch_id': selected_batch_id,
-        'all_courses': all_courses,
-        'selected_course': selected_course,
     })
 
 @require_POST
