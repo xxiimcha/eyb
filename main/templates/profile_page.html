@@ -123,7 +123,7 @@
         <div class="row g-0 align-items-center p-4">
             <div class="col-md-4 text-center">
                 {% if graduate.photo %}
-                    <img src="/{{ graduate.photo }}" class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
+                    <img src="{{ graduate.photo }}" class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
                 {% else %}
                     <img src="{% static 'assets/images/image-placeholder.png' %}" class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
                 {% endif %}
@@ -164,7 +164,7 @@
                 <div class="col">
                     <div class="graduate-card">
                         {% if grad.photo %}
-                            <img src="/{{ grad.photo }}" alt="{{ grad.first_name }}">
+                            <img src="{{ grad.photo }}" alt="{{ grad.first_name }}">
                         {% else %}
                             <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default">
                         {% endif %}
