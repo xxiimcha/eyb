@@ -63,7 +63,7 @@
                     <button type="submit" class="btn btn-primary w-100">Apply</button>
                 </div>
             </form>
-            
+
             <div class="table-responsive">
                 <table id="accounts-table" class="table table-hover table-bordered table-striped dt-responsive nowrap w-100">
                     <thead class="table-light">
@@ -86,7 +86,7 @@
                                     <div class="text-truncate" style="flex-grow: 1;" id="privateKey{{ account.id }}">
                                         {{ account.private_key }}
                                     </div>
-                                    <button type="button" title="Copy to clipboard" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('privateKey{{ account.id }}')">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('privateKey{{ account.id }}')">
                                         <i class="mdi mdi-content-copy"></i>
                                     </button>
                                 </div>
@@ -96,7 +96,7 @@
                                     <div class="text-truncate" style="flex-grow: 1;" id="publicKey{{ account.id }}">
                                         {{ account.public_key }}
                                     </div>
-                                    <button type="button" title="Copy to clipboard" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('publicKey{{ account.id }}')">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('publicKey{{ account.id }}')">
                                         <i class="mdi mdi-content-copy"></i>
                                     </button>
                                 </div>
@@ -119,7 +119,7 @@
                                         <h5 class="modal-title" id="viewModalLabel{{ account.id }}">
                                             Graduate Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="row mb-3">
@@ -129,7 +129,10 @@
                                                 {% else %}
                                                     <div class="border rounded py-4 bg-light">
                                                         <p>No photo uploaded.</p>
-                                                        <button class="btn btn-sm btn-outline-secondary" onclick="openUploadModal('{{ account.id }}')">Upload Image</button>
+                                                        <button class="btn btn-sm btn-outline-secondary"
+                                                            onclick="openUploadModal('{{ account.graduate.id }}', '{{ account.graduate.first_name }}')">
+                                                            Upload Image
+                                                        </button>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -159,34 +162,34 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Upload Image Modal -->
-                        <div class="modal fade" id="uploadImageModal{{ account.id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <form method="POST" action="{% url 'upload_photo' account.graduate.id %}" enctype="multipart/form-data" class="modal-content">
-                                    {% csrf_token %}
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Upload Photo for {{ account.graduate.first_name }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="photo{{ account.id }}" class="form-label">Choose Photo</label>
-                                            <input type="file" class="form-control" name="photo" id="photo{{ account.id }}" accept="image/*" required>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Upload</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Reusable Upload Photo Modal -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" enctype="multipart/form-data" class="modal-content" id="uploadImageForm">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadImageTitle">Upload Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Choose Photo</label>
+                    <input type="file" class="form-control" name="photo" accept="image/*" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
@@ -212,12 +215,14 @@ function copyToClipboard(elementId) {
     });
 }
 
-function openUploadModal(id) {
-    const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal' + id));
-    if (viewModal) viewModal.hide();
-    setTimeout(() => {
-        new bootstrap.Modal(document.getElementById('uploadImageModal' + id)).show();
-    }, 300);
+function openUploadModal(graduateId, firstName) {
+    const uploadModal = new bootstrap.Modal(document.getElementById('uploadImageModal'));
+    const form = document.getElementById('uploadImageForm');
+    const title = document.getElementById('uploadImageTitle');
+
+    form.action = `/accounts/photo/${graduateId}/`;
+    title.innerText = `Upload Photo for ${firstName}`;
+    uploadModal.show();
 }
 </script>
 {% endblock %}
