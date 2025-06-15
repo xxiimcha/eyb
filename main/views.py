@@ -64,10 +64,14 @@ def student_profile_page(request):
     graduate = Graduate.objects.get(id=graduate_id)
     batchmates = Graduate.objects.filter(batch=graduate.batch)
 
-    # Group all batchmates (including the graduate) by course
+    # Group and sort batchmates by course and last name
     course_groups = defaultdict(list)
     for g in batchmates:
         course_groups[g.course].append(g)
+
+    # Sort each course group by last name (and then first name as tiebreaker)
+    for course in course_groups:
+        course_groups[course] = sorted(course_groups[course], key=lambda x: (x.last_name.lower(), x.first_name.lower()))
 
     return render(request, 'profile_page.html', {
         'graduate': graduate,

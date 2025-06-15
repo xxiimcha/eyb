@@ -130,7 +130,7 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body ps-md-5">
-                    <h3 class="text-primary fw-bold">{{ graduate.first_name }} {{ graduate.middle_name }} {{ graduate.last_name }}</h3>
+                    <h3 class="text-primary fw-bold">{{ graduate.last_name|upper }}, {{ graduate.first_name }} {{ graduate.middle_name }}</h3>
                     <p><strong>Course:</strong> {{ graduate.course }}</p>
                     <p><strong>Email:</strong> {{ graduate.email }}</p>
                     <p><strong>Ambition:</strong> {{ graduate.ambition|default:"—" }}</p>
@@ -168,7 +168,7 @@
                         {% else %}
                             <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default">
                         {% endif %}
-                        <div class="graduate-name">{{ grad.first_name }} {{ grad.middle_name }} {{ grad.last_name }}</div>
+                        <div class="graduate-name">{{ grad.last_name|upper }}, {{ grad.first_name }} {{ grad.middle_name }}</div>
                         <div class="graduate-ambition">{{ grad.ambition|default:" " }}</div>
                     </div>
                 </div>
