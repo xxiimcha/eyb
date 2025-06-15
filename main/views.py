@@ -4,7 +4,8 @@ import qrcode
 import base64
 from io import BytesIO
 from collections import defaultdict
-
+from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
 from django.views.decorators.http import require_POST
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -485,33 +486,41 @@ def add_account_view(request):
             )
             print("[DEBUG] Account created for graduate ID:", graduate.id)
 
-            # Generate QR Code
+            # Generate QR Code (binary)
             access_url = f"https://eyb.onrender.com/gts/{graduate.id}"
             qr = qrcode.make(access_url)
             buffer = BytesIO()
             qr.save(buffer, format="PNG")
             buffer.seek(0)
-            qr_base64 = base64.b64encode(buffer.read()).decode().strip()
+            qr_image_data = buffer.read()
 
-            # Prepare email
+            # Render HTML with CID placeholder
             subject = 'Your eYearbook Account Credentials'
             html_message = render_to_string('emails/account_credentials.html', {
                 'graduate': graduate,
                 'public_key': public_key,
                 'private_key': private_key,
-                'qr_code': qr_base64,
+                'qr_code_cid': 'qrimage',
                 'access_url': access_url
             })
             plain_message = strip_tags(html_message)
 
             try:
-                send_mail(
-                    subject,
-                    plain_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [graduate.email],
-                    html_message=html_message
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[graduate.email]
                 )
+                email.attach_alternative(html_message, "text/html")
+
+                # Attach the QR image inline
+                qr_image = MIMEImage(qr_image_data)
+                qr_image.add_header('Content-ID', '<qrimage>')
+                qr_image.add_header('Content-Disposition', 'inline', filename='qrimage.png')
+                email.attach(qr_image)
+
+                email.send()
                 print("[DEBUG] Email sent successfully to", graduate.email)
             except Exception as e:
                 print("[WARNING] Email sending failed:", str(e))
