@@ -373,6 +373,7 @@ def import_accounts_view(request):
                     batch=batch
                 )
 
+                # Generate RSA Key Pair
                 key = RSA.generate(2048)
                 private_key = key.export_key().decode()
                 public_key = key.publickey().export_key().decode()
@@ -383,34 +384,45 @@ def import_accounts_view(request):
                     private_key=private_key
                 )
 
-                # Generate QR code for public key
-                url = f"https://eyb.onrender.com/gts/{graduate.id}"
-                qr = qrcode.make(url)
+                # Generate QR Code (binary)
+                access_url = f"https://eyb.onrender.com/gts/{graduate.id}"
+                qr = qrcode.make(access_url)
                 buffer = BytesIO()
                 qr.save(buffer, format="PNG")
-                buffer.seek(0)  # <-- important for proper base64 output
-                qr_base64 = base64.b64encode(buffer.read()).decode()
+                buffer.seek(0)
+                qr_image_data = buffer.read()
 
+                # Render HTML with CID
                 subject = 'Your eYearbook Account Credentials'
                 html_message = render_to_string('emails/account_credentials.html', {
                     'graduate': graduate,
                     'public_key': public_key,
                     'private_key': private_key,
-                    'qr_code': qr_base64,
-                    'access_url': url  # Pass the direct URL to the template
+                    'qr_code_cid': 'qrimage',
+                    'access_url': access_url
                 })
                 plain_message = strip_tags(html_message)
 
-                send_mail(
-                    subject,
-                    plain_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [graduate.email],
-                    html_message=html_message,
-                    fail_silently=False
+                # Send email with embedded QR image
+                email_obj = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[graduate.email]
                 )
+                email_obj.attach_alternative(html_message, "text/html")
+
+                qr_image = MIMEImage(qr_image_data)
+                qr_image.add_header('Content-ID', '<qrimage>')
+                qr_image.add_header('Content-Disposition', 'inline', filename='qrimage.png')
+                email_obj.attach(qr_image)
+
+                email_obj.send()
+                print("[DEBUG] Email sent successfully to", graduate.email)
 
             except Exception as e:
+                print("[ERROR] Failed to process row:", row)
+                print("Exception:", str(e))
                 messages.error(request, f"Error importing row: {row} – {e}")
                 continue
 
@@ -523,6 +535,7 @@ def add_account_view(request):
 
                 email.send()
                 print("[DEBUG] Email sent successfully to", graduate.email)
+
             except Exception as e:
                 print("[WARNING] Email sending failed:", str(e))
                 messages.warning(request, "Student added, but email was not sent.")
