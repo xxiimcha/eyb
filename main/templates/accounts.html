@@ -110,58 +110,6 @@
                                 </form>
                             </td>
                         </tr>
-
-                        <!-- View Modal -->
-                        <div class="modal fade" id="viewModal{{ account.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ account.id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-success text-white">
-                                        <h5 class="modal-title" id="viewModalLabel{{ account.id }}">
-                                            Graduate Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-center">
-                                                {% if account.graduate.photo %}
-                                                    <img src="{{ account.graduate.photo }}" class="img-fluid rounded" style="max-height: 220px;">
-                                                {% else %}
-                                                    <div class="border rounded py-4 bg-light">
-                                                        <p>No photo uploaded.</p>
-                                                        <button class="btn btn-sm btn-outline-secondary"
-                                                            onclick="openUploadModal('{{ account.graduate.id }}', '{{ account.graduate.first_name }}')">
-                                                            Upload Image
-                                                        </button>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                            <div class="col-md-8">
-                                                <dl class="row">
-                                                    <dt class="col-sm-4">Full Name:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.first_name }} {{ account.graduate.middle_name }} {{ account.graduate.last_name }}</dd>
-                                                    <dt class="col-sm-4">Email:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.email }}</dd>
-                                                    <dt class="col-sm-4">Contact:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.contact }}</dd>
-                                                    <dt class="col-sm-4">Address:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.address }}</dd>
-                                                    <dt class="col-sm-4">Course:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.course }}</dd>
-                                                    <dt class="col-sm-4">Ambition:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.ambition|default:"N/A" }}</dd>
-                                                    <dt class="col-sm-4">Batch:</dt>
-                                                    <dd class="col-sm-8">{{ account.graduate.batch.from_year }} - {{ account.graduate.batch.to_year }} ({{ account.graduate.batch.batch_type }})</dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -170,7 +118,82 @@
     </div>
 </div>
 
-<!-- Reusable Upload Photo Modal -->
+<!-- Import CSV Modal -->
+<div class="modal fade" id="importCSVModal" tabindex="-1" aria-labelledby="importCSVModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" enctype="multipart/form-data" action="{% url 'import_accounts' %}" class="modal-content">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="importCSVModalLabel">Import Accounts via CSV</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="csvFile" class="form-label">Choose CSV File</label>
+          <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Import</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modals moved outside the table for JS compatibility -->
+{% for account in accounts %}
+<div class="modal fade" id="viewModal{{ account.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ account.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="viewModalLabel{{ account.id }}">
+                    Graduate Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 text-center">
+                        {% if account.graduate.photo %}
+                            <img src="{{ account.graduate.photo }}" class="img-fluid rounded" style="max-height: 220px;" alt="Graduate Photo">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.jpg' %}" class="img-fluid rounded" style="max-height: 220px;" alt="No Photo">
+                            <button class="btn btn-sm btn-outline-secondary mt-2"
+                                onclick="openUploadModal('{{ account.graduate.id }}', '{{ account.graduate.first_name }}')">
+                                Upload Image
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <dl class="row">
+                            <dt class="col-sm-4">Full Name:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.first_name }} {{ account.graduate.middle_name }} {{ account.graduate.last_name }}</dd>
+                            <dt class="col-sm-4">Email:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.email }}</dd>
+                            <dt class="col-sm-4">Contact:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.contact }}</dd>
+                            <dt class="col-sm-4">Address:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.address }}</dd>
+                            <dt class="col-sm-4">Course:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.course }}</dd>
+                            <dt class="col-sm-4">Ambition:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.ambition|default:"N/A" }}</dd>
+                            <dt class="col-sm-4">Batch:</dt>
+                            <dd class="col-sm-8">{{ account.graduate.batch.from_year }} - {{ account.graduate.batch.to_year }} ({{ account.graduate.batch.batch_type }})</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Reusable Upload Modal -->
 <div class="modal fade" id="uploadImageModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="POST" enctype="multipart/form-data" class="modal-content" id="uploadImageForm">
@@ -199,6 +222,7 @@
 <script src="{% static 'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
 <script src="{% static 'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
 <script src="{% static 'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
+
 <script>
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
