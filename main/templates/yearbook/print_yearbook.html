@@ -109,7 +109,7 @@
           {% endif %}
         </div>
         <div class="name">
-          {{ grad.last_name|upper }}, {{ grad.first_name|upper }}{% if grad.middle_name %} {{ grad.middle_name|upper }}{% endif %}
+          {{ grad.last_name|upper }}, {{ grad.first_name|upper }}{% if grad.middle_name %} {{ grad.middle_name|first|upper }}.{% endif %}
         </div>
         <div class="ambition">{{ grad.ambition|default:"" }}</div>
       </div>

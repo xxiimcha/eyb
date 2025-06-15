@@ -168,7 +168,7 @@
                         {% else %}
                             <img src="{% static 'assets/images/image-placeholder.png' %}" alt="Default">
                         {% endif %}
-                        <div class="graduate-name">{{ grad.last_name|upper }}, {{ grad.first_name|upper }} {{ grad.middle_name |upper}}</div>
+                        <div class="graduate-name">{{ grad.last_name|upper }}, {{ grad.first_name|upper }}{% if grad.middle_name %} {{ grad.middle_name|first|upper }}.{% endif %}</div>
                         <div class="graduate-ambition">{{ grad.ambition|default:" " }}</div>
                     </div>
                 </div>
