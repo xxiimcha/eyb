@@ -79,14 +79,15 @@ def student_profile_page(request):
         'course_groups': dict(course_groups)
     })
 
-
 def print_yearbook_view(request):
     graduate_id = request.session.get('graduate_id')
     if not graduate_id:
         return redirect('student_login')
 
     graduate = Graduate.objects.get(id=graduate_id)
-    batchmates = Graduate.objects.filter(batch=graduate.batch)
+    
+    # Order the batchmates by course and then by last_name
+    batchmates = Graduate.objects.filter(batch=graduate.batch).order_by('course', 'last_name')
 
     course_groups = defaultdict(list)
     for g in batchmates:
