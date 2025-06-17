@@ -663,7 +663,7 @@ def analytics_view(request):
         tracer = grad.tracer_forms.first()
         if tracer:
             submitted_count += 1
-            if tracer.employment_status == 'employed':
+            if tracer.employment_status and tracer.employment_status.strip().lower() == 'yes':
                 employed_count += 1
     not_submitted_count = total_graduates - submitted_count
 

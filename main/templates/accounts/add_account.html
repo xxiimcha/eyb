@@ -11,37 +11,37 @@
             </a>
         </div>
         <div class="card-body px-4 py-4">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" id="studentForm" onsubmit="return validateForm();">
                 {% csrf_token %}
                 <div class="row">
                     <!-- Name Fields -->
                     <div class="col-md-4 mb-3">
                         <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
-                        <input name="first_name" id="first_name" class="form-control" required>
+                        <input name="first_name" id="first_name" class="form-control" required maxlength="50">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="middle_name" class="form-label">Middle Name</label>
-                        <input name="middle_name" id="middle_name" class="form-control">
+                        <input name="middle_name" id="middle_name" class="form-control" maxlength="50">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
-                        <input name="last_name" id="last_name" class="form-control" required>
+                        <input name="last_name" id="last_name" class="form-control" required maxlength="50">
                     </div>
 
                     <!-- Contact Info -->
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input name="email" id="email" type="email" class="form-control" required>
+                        <input name="email" id="email" type="email" class="form-control" required maxlength="100">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="contact" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                        <input name="contact" id="contact" class="form-control" required>
+                        <input name="contact" id="contact" class="form-control" required maxlength="20">
                     </div>
 
                     <!-- Address -->
                     <div class="col-12 mb-3">
                         <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                        <textarea name="address" id="address" rows="2" class="form-control" required></textarea>
+                        <textarea name="address" id="address" rows="2" class="form-control" required maxlength="255"></textarea>
                     </div>
 
                     <!-- Academic Details -->
@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="ambition" class="form-label">Ambition</label>
-                        <input name="ambition" id="ambition" class="form-control">
+                        <input name="ambition" id="ambition" class="form-control" maxlength="100">
                     </div>
 
                     <!-- Batch and Photo -->
@@ -76,12 +76,15 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="photo" class="form-label">Upload Photo</label>
-                        <input type="file" name="photo" id="photo" class="form-control">
+                        <input type="file" name="photo" id="photo" class="form-control"
+                               accept="image/jpeg,image/png,image/webp"
+                               onchange="validateImage(this)">
+                        <small class="text-muted">Accepted formats: JPG, PNG, WEBP. Max size: 2MB</small>
                     </div>
                 </div>
 
                 <div class="text-end">
-                    <button class="btn btn-success px-4">
+                    <button type="submit" class="btn btn-success px-4">
                         <i class="fas fa-save me-1"></i> Save Student
                     </button>
                 </div>
@@ -89,4 +92,84 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nameRegex = /^[A-Za-z\s]*$/;
+    const contactRegex = /^\+?[0-9]{0,20}$/;
+
+    const fields = {
+        first_name: document.getElementById('first_name'),
+        middle_name: document.getElementById('middle_name'),
+        last_name: document.getElementById('last_name'),
+        contact: document.getElementById('contact')
+    };
+
+    // Enforce allowed characters while typing
+    Object.values([fields.first_name, fields.middle_name, fields.last_name]).forEach(field => {
+        field.addEventListener('input', function (e) {
+            if (!nameRegex.test(field.value)) {
+                field.value = field.value.replace(/[^A-Za-z\s]/g, '');
+            }
+        });
+    });
+
+    fields.contact.addEventListener('input', function (e) {
+        let value = fields.contact.value;
+        // Allow leading + only once and then digits
+        if (value.startsWith('+')) {
+            value = '+' + value.slice(1).replace(/[^0-9]/g, '');
+        } else {
+            value = value.replace(/[^0-9]/g, '');
+        }
+        if (value.length > 20) value = value.slice(0, 20);
+        fields.contact.value = value;
+    });
+
+    // Final validation on submit
+    document.getElementById('studentForm').addEventListener('submit', function (e) {
+        const firstName = fields.first_name.value.trim();
+        const middleName = fields.middle_name.value.trim();
+        const lastName = fields.last_name.value.trim();
+        const contact = fields.contact.value.trim();
+
+        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+            alert("First and Last names must only contain letters and spaces.");
+            e.preventDefault();
+            return false;
+        }
+
+        if (middleName && !nameRegex.test(middleName)) {
+            alert("Middle Name must only contain letters and spaces.");
+            e.preventDefault();
+            return false;
+        }
+
+        if (!contactRegex.test(contact)) {
+            alert("Contact Number must only contain digits and may start with '+'. Max 20 digits.");
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
+    });
+});
+
+// Image validation
+function validateImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Invalid file type. Please upload JPG, PNG, or WEBP.');
+            input.value = '';
+        } else if (file.size > 2 * 1024 * 1024) {
+            alert('File is too large. Max size is 2MB.');
+            input.value = '';
+        }
+    }
+}
+</script>
 {% endblock %}
