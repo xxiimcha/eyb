@@ -33,7 +33,7 @@
             </li>
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button">
-                    <img src="{% static 'assets/images/users/avatar-4.jpg' %}" alt="user-image" class="rounded-circle">
+                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
                     <span class="ms-1 d-none d-md-inline-block">
                         {{ request.user.get_full_name|default:request.user.username }} <i class="mdi mdi-chevron-down"></i>
                     </span>
