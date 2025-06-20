@@ -20,8 +20,8 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-header bg-light">
-            <h5 class="mb-1">Graduate List</h5>
-            <p class="text-muted small mb-0">This table displays all graduates in the system. DataTables is enabled for enhanced interaction.</p>
+            <h5 class="mb-1">Alumni List</h5>
+            <p class="text-muted small mb-0">This table displays all alumni in the system. DataTables is enabled for enhanced interaction.</p>
         </div>
         <div class="card-body">
 
@@ -59,7 +59,7 @@
                     <input type="text" name="search" id="search" class="form-control" value="{{ request.GET.search }}">
                 </div>
                 <div class="col-md-12 text-end">
-                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </form>
             
@@ -110,7 +110,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="8" class="text-center text-muted">No graduates found.</td>
+                            <td colspan="8" class="text-center text-muted">No alumni found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
