@@ -36,9 +36,9 @@
         <div class="card-body">
             <form method="GET" class="row g-3 mb-3 align-items-end">
                 <div class="col-md-3">
-                    <label for="course" class="form-label">Filter by Course</label>
+                    <label for="course" class="form-label">Filter by Program</label>
                     <select name="course" id="course" class="form-select">
-                        <option value="">All Courses</option>
+                        <option value="">All Programs</option>
                         {% for course in courses %}
                             <option value="{{ course }}" {% if request.GET.course == course %}selected{% endif %}>{{ course }}</option>
                         {% endfor %}
@@ -60,7 +60,7 @@
                     <input type="text" name="search" id="search" class="form-control" value="{{ request.GET.search }}">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
                 </div>
             </form>
 
@@ -148,7 +148,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title" id="viewModalLabel{{ account.id }}">
-                    Graduate Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
+                    Alumni Profile – {{ account.graduate.first_name }} {{ account.graduate.last_name }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -175,7 +175,7 @@
                             <dd class="col-sm-8">{{ account.graduate.contact }}</dd>
                             <dt class="col-sm-4">Address:</dt>
                             <dd class="col-sm-8">{{ account.graduate.address }}</dd>
-                            <dt class="col-sm-4">Course:</dt>
+                            <dt class="col-sm-4">Program:</dt>
                             <dd class="col-sm-8">{{ account.graduate.course }}</dd>
                             <dt class="col-sm-4">Ambition:</dt>
                             <dd class="col-sm-8">{{ account.graduate.ambition|default:"N/A" }}</dd>
