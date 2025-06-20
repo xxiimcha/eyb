@@ -24,7 +24,7 @@
         <div class="col-md-6 col-lg-3">
             <div class="card text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Total Graduates</h5>
+                    <h5 class="card-title">Total Alumni</h5>
                     <h2>{{ total_graduates }}</h2>
                 </div>
             </div>
@@ -105,7 +105,7 @@
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Graduates Per Program</h5>
+                        <h5 class="card-title mb-0">Alumni Per Program</h5>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@
         data: {
             labels: {{ chart_labels|safe }},
             datasets: [{
-                label: 'Graduates per Year',
+                label: 'Alumni per Year',
                 data: {{ chart_data|safe }},
                 backgroundColor: '#4caf50'
             }]
@@ -170,7 +170,7 @@
         data: {
             labels: {{ course_labels|safe }},
             datasets: [{
-                label: 'Graduates per Course',
+                label: 'Alumni per Course',
                 data: {{ course_data|safe }},
                 backgroundColor: '#7e57c2'
             }]
