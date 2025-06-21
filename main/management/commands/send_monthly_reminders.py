@@ -11,10 +11,10 @@ from email.mime.image import MIMEImage
 from main.models import Graduate, Account
 
 class Command(BaseCommand):
-    help = 'Send monthly reminder emails to graduates who have not submitted the tracer form'
+    help = 'Send monthly emails to all registered graduates'
 
     def handle(self, *args, **kwargs):
-        graduates = Graduate.objects.filter(tracer_forms__isnull=True)
+        graduates = Graduate.objects.exclude(email__isnull=True).exclude(email='')
 
         for graduate in graduates:
             try:
