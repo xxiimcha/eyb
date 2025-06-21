@@ -328,7 +328,7 @@ def accounts_view(request):
     # Generate QR code for each account
     for account in accounts:
         graduate_id = account.graduate.id
-        url = f"https://eyb.onrender.com/gts/{graduate_id}"
+        url = f"https://alumnitrack.onrender.com/gts/{graduate_id}"
         qr = qrcode.make(url)
         buffer = BytesIO()
         qr.save(buffer, format="PNG")
@@ -385,7 +385,7 @@ def import_accounts_view(request):
                 )
 
                 # Generate QR Code (binary)
-                access_url = f"https://eyb.onrender.com/gts/{graduate.id}"
+                access_url = f"https://alumnitrack.onrender.com/gts/{graduate.id}"
                 qr = qrcode.make(access_url)
                 buffer = BytesIO()
                 qr.save(buffer, format="PNG")
@@ -500,7 +500,7 @@ def add_account_view(request):
             print("[DEBUG] Account created for graduate ID:", graduate.id)
 
             # Generate QR Code (binary)
-            access_url = f"https://eyb.onrender.com/gts/{graduate.id}"
+            access_url = f"https://alumnitrack.onrender.com/gts/{graduate.id}"
             qr = qrcode.make(access_url)
             buffer = BytesIO()
             qr.save(buffer, format="PNG")
@@ -703,7 +703,7 @@ def send_reminder_email(request, graduate_id):
     account = get_object_or_404(Account, graduate=graduate)
 
     # Regenerate QR code for the graduate's GTS form
-    url = f"https://eyb.onrender.com/gts/{graduate.id}"
+    url = f"https://alumnitrack.onrender.com/gts/{graduate.id}"
     qr = qrcode.make(url)
     buffer = BytesIO()
     qr.save(buffer, format="PNG")

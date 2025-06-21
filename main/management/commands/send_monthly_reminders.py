@@ -19,7 +19,7 @@ class Command(BaseCommand):
         for graduate in graduates:
             try:
                 account = Account.objects.get(graduate=graduate)
-                url = f"https://eyb.onrender.com/gts/{graduate.id}"
+                url = f"https://alumnitrack.onrender.com/gts/{graduate.id}"
 
                 # Generate QR code image bytes
                 qr = qrcode.make(url)
