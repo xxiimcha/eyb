@@ -109,7 +109,10 @@
     </form>
 
     <!-- Header -->
-    <h2 class="text-center mb-4 fw-bold">Welcome to Your Yearbook</h2>
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+        <img src="{% static 'assets/images/school-logo.png' %}" alt="Logo" style="height: 50px;">
+        <h2 class="fw-bold m-0">Welcome to Your Yearbook</h2>
+    </div>
 
     <!-- Print Button -->
     <div class="text-end mb-4 no-print">
@@ -131,7 +134,7 @@
             <div class="col-md-8">
                 <div class="card-body ps-md-5">
                     <h3 class="text-primary fw-bold">{{ graduate.last_name|upper }}, {{ graduate.first_name|upper }} {{ graduate.middle_name|upper }}</h3>
-                    <p><strong>Course:</strong> {{ graduate.course }}</p>
+                    <p><strong>Program:</strong> {{ graduate.course }}</p>
                     <p><strong>Email:</strong> {{ graduate.email }}</p>
                     <p><strong>Ambition:</strong> {{ graduate.ambition|default:"—" }}</p>
                     <p><strong>Batch:</strong> {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</p>
@@ -141,7 +144,7 @@
     </div>
 
     <!-- Tabs -->
-    <h3 class="text-center text-secondary mb-4 fw-semibold">Your Batchmates by Course</h3>
+    <h3 class="text-center text-secondary mb-4 fw-semibold">Your Batchmates by Program</h3>
 
     <ul class="nav nav-tabs mb-4 no-print" id="courseTab" role="tablist">
         {% for course, grads in course_groups.items %}
