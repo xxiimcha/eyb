@@ -100,63 +100,75 @@ def print_yearbook_view(request):
 
 def gts(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
+    
+    tracer_form = GraduateTracerForm.objects.filter(graduate_id=graduate_id).first()
 
     return render(request, 'gts.html', {
-        'graduate': graduate
+        'graduate': graduate,
+        'tracer_form': tracer_form
     })
 
 def register_form(request, graduate_id):
     graduate = get_object_or_404(Graduate, id=graduate_id)
 
+    # Check if a form already exists for this graduate
+    tracer_form = GraduateTracerForm.objects.filter(graduate=graduate).first()
+
     if request.method == 'POST':
-        tracer_form = GraduateTracerForm.objects.create(
-            graduate=graduate,
-            full_name=request.POST.get('full_name'),
-            address=request.POST.get('address'),
-            mobile_number=request.POST.get('mobile_number'),
-            civil_status=request.POST.get('civil_status'),
-            birthday=request.POST.get('birthday'),
-            region=request.POST.get('region'),
-            sex=request.POST.get('sex'),
-            province=request.POST.get('province'),
-            residence_location=request.POST.get('residence_location'),
-            degree=request.POST.get('degree'),
-            specialization=request.POST.get('specialization'),
-            college_name=request.POST.get('college_name'),
-            year_graduated=request.POST.get('year_graduated'),
-            honors=request.POST.get('honors'),
-            exam_passed=request.POST.get('exam_passed'),
-            exam_date=request.POST.get('exam_date') or None,
-            exam_rating=request.POST.get('exam_rating'),
-            undergrad_reasons=",".join(request.POST.getlist('undergrad_reasons')),
-            grad_reasons=",".join(request.POST.getlist('grad_reasons')),
-            grad_reasons_other=request.POST.get('grad_reasons_other', ''),
-            trainings=request.POST.get('trainings'),
-            advance_reason=request.POST.get('advance_reason'),
-            employment_status=request.POST.get('employment_status'),
-            unemployed_reasons=",".join(request.POST.getlist('unemployed_reasons')),
-            occupation=request.POST.get('occupation'),
-            business_line=request.POST.get('business_line'),
-            work_location=",".join(request.POST.getlist('work_location')),
-            first_job=request.POST.get('first_job'),
-            stay_reasons=",".join(request.POST.getlist('stay_reasons')),
-            job_course_relation=request.POST.get('job_course_relation'),
-            job_finding_time=request.POST.get('job_finding_time'),
-            job_accept_reasons=",".join(request.POST.getlist('job_accept_reasons[]')),
-            job_change_reasons=",".join(request.POST.getlist('job_change_reasons[]')),
-            first_job_duration=request.POST.get('first_job_duration'),
-            first_job_position=request.POST.get('first_job_position'),
-            current_job_position=request.POST.get('current_job_position'),
-            current_employer_name=request.POST.get('current_employer_name'),
-            current_employer_address=request.POST.get('current_employer_address'),
-            current_supervisor_name=request.POST.get('current_supervisor_name'),
-            current_employer_contact=request.POST.get('current_employer_contact'),
-            initial_salary=request.POST.get('initial_salary'),
-            curriculum_relevance=request.POST.get('curriculum_relevance'),
-            college_competencies=",".join(request.POST.getlist('college_competencies[]')),
-            other_skills_specified=request.POST.get('other_skills_specified'),
-            data_privacy='data_privacy' in request.POST
-        )
+        form_data = {
+            'full_name': request.POST.get('full_name'),
+            'address': request.POST.get('address'),
+            'mobile_number': request.POST.get('mobile_number'),
+            'civil_status': request.POST.get('civil_status'),
+            'birthday': request.POST.get('birthday'),
+            'region': request.POST.get('region'),
+            'sex': request.POST.get('sex'),
+            'province': request.POST.get('province'),
+            'residence_location': request.POST.get('residence_location'),
+            'degree': request.POST.get('degree'),
+            'specialization': request.POST.get('specialization'),
+            'college_name': request.POST.get('college_name'),
+            'year_graduated': request.POST.get('year_graduated'),
+            'honors': request.POST.get('honors'),
+            'exam_passed': request.POST.get('exam_passed'),
+            'exam_date': request.POST.get('exam_date') or None,
+            'exam_rating': request.POST.get('exam_rating'),
+            'undergrad_reasons': ",".join(request.POST.getlist('undergrad_reasons')),
+            'grad_reasons': ",".join(request.POST.getlist('grad_reasons')),
+            'grad_reasons_other': request.POST.get('grad_reasons_other', ''),
+            'trainings': request.POST.get('trainings'),
+            'advance_reason': request.POST.get('advance_reason'),
+            'employment_status': request.POST.get('employment_status'),
+            'unemployed_reasons': ",".join(request.POST.getlist('unemployed_reasons')),
+            'occupation': request.POST.get('occupation'),
+            'business_line': request.POST.get('business_line'),
+            'work_location': ",".join(request.POST.getlist('work_location')),
+            'first_job': request.POST.get('first_job'),
+            'stay_reasons': ",".join(request.POST.getlist('stay_reasons')),
+            'job_course_relation': request.POST.get('job_course_relation'),
+            'job_finding_time': request.POST.get('job_finding_time'),
+            'job_accept_reasons': ",".join(request.POST.getlist('job_accept_reasons[]')),
+            'job_change_reasons': ",".join(request.POST.getlist('job_change_reasons[]')),
+            'first_job_duration': request.POST.get('first_job_duration'),
+            'first_job_position': request.POST.get('first_job_position'),
+            'current_job_position': request.POST.get('current_job_position'),
+            'current_employer_name': request.POST.get('current_employer_name'),
+            'current_employer_address': request.POST.get('current_employer_address'),
+            'current_supervisor_name': request.POST.get('current_supervisor_name'),
+            'current_employer_contact': request.POST.get('current_employer_contact'),
+            'initial_salary': request.POST.get('initial_salary'),
+            'curriculum_relevance': request.POST.get('curriculum_relevance'),
+            'college_competencies': ",".join(request.POST.getlist('college_competencies[]')),
+            'other_skills_specified': request.POST.get('other_skills_specified'),
+            'data_privacy': 'data_privacy' in request.POST
+        }
+
+        if tracer_form:
+            for field, value in form_data.items():
+                setattr(tracer_form, field, value)
+            tracer_form.save()
+        else:
+            tracer_form = GraduateTracerForm.objects.create(graduate=graduate, **form_data)
 
         # Send summary email
         summary = f"""
@@ -183,7 +195,12 @@ Summary:
 
         return redirect('thank_you')
 
-    return render(request, 'gts.html', {'graduate': graduate})
+    return render(request, 'gts.html', {
+        'graduate': graduate,
+        'tracer_form': tracer_form,
+        'civil_status_options': ['Single', 'Married', 'Divorced', 'Widowed'],
+        'sex_options': ['Male', 'Female', 'Prefer not to say']
+    })
 
 def login_view(request):
     if request.method == 'POST':
