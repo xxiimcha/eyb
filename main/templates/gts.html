@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,43 +8,52 @@
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  
+
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  
+
   <!-- Bootstrap & AdminLTE CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 
   <style>
-    .hero-section {
-        text-align: center;
-        padding: 100px 20px;
-        background: linear-gradient(to right, #4A90E2, #50B3A2);
-        color: white;
+    .carousel-item {
+      height: 500px;
     }
-    .hero-section h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
+
+    .carousel-item img {
+      object-fit: cover;
+      height: 100%;
     }
-    .hero-section p {
-        font-size: 1.2rem;
-        margin-bottom: 20px;
+
+    .carousel-caption {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 10px;
     }
+
+    .carousel-caption h1,
+    .carousel-caption p {
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+    }
+
     .footer {
-        text-align: center;
-        padding: 15px;
-        background: #343a40;
-        color: white;
-        position: relative;
-        bottom: 0;
-        width: 100%;
+      text-align: center;
+      padding: 15px;
+      background: #343a40;
+      color: white;
+      position: relative;
+      bottom: 0;
+      width: 100%;
     }
+
     .form-control {
-        border-radius: 5px;
+      border-radius: 5px;
     }
+
     .btn-primary {
-        font-size: 1.2rem;
-        padding: 10px;
+      font-size: 1.2rem;
+      padding: 10px;
     }
   </style>
 </head>
@@ -52,7 +62,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand font-weight-bold text-primary" href="/">eYearbook</a>
+      <a class="navbar-brand font-weight-bold text-primary" href="/">AlumniTrack</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -65,41 +75,62 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container">
-      <h1>Welcome to the AlumniTrack Registration</h1>
-      <p>Please complete the form below to submit your graduate tracer profile.</p>
+  <!-- Hero Section Carousel -->
+<!-- Hero Section Carousel without controls -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{% static 'assets/images/hero/carousel1.jpg' %}" class="d-block w-100" alt="Slide 1">
+      <div class="carousel-caption d-none d-md-block">
+        <h1>Welcome to AlumniTrack</h1>
+        <p>Please complete the form below to submit your graduate tracer profile.</p>
+      </div>
     </div>
-  </section>
+    <div class="carousel-item">
+      <img src="{% static 'assets/images/hero/carousel2.jpg' %}" class="d-block w-100" alt="Slide 2">
+      <div class="carousel-caption d-none d-md-block">
+        <h1>Your Story Matters</h1>
+        <p>Join thousands of alumni contributing to research and development.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'assets/images/hero/carousel3.jpg' %}" class="d-block w-100" alt="Slide 3">
+      <div class="carousel-caption d-none d-md-block">
+        <h1>Connect with Us</h1>
+        <p>Stay informed and engaged with your alma mater.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <!-- Main Form Content -->
   <div class="container mt-5 mb-5">
     <form method="POST" action="{% url 'register_form' graduate.id %}">
-        {% csrf_token %}
+      {% csrf_token %}
 
-        {% include 'form/personal_info.html' %}
-        {% include 'form/graduate_reasons.html' %}
-        {% include 'form/employment_data.html' %}
+      {% include 'form/personal_info.html' %}
+      {% include 'form/graduate_reasons.html' %}
+      {% include 'form/employment_data.html' %}
 
-        <!-- Data Privacy -->
-        <h5 class="text-primary mt-4">Data Privacy Statement</h5>
-        <p class="text-muted">
-            By submitting this form, you acknowledge and agree that your data will be stored securely and used only for statistical and research purposes.
-        </p>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="data_privacy" required>
-            <label class="form-check-label">I agree to the Data Privacy Statement</label>
-        </div>
+      <!-- Data Privacy -->
+      <h5 class="text-primary mt-4">Data Privacy Statement</h5>
+      <p class="text-muted">
+        By submitting this form, you acknowledge and agree that your data will be stored securely and used only for statistical and research purposes.
+      </p>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="data_privacy" required>
+        <label class="form-check-label">I agree to the Data Privacy Statement</label>
+      </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary btn-block mt-4">Submit Registration</button>
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary btn-block mt-4">Submit Registration</button>
     </form>
   </div>
 
   <!-- Footer -->
   <div class="footer">
-    &copy; {{ year|default:"2025" }} eYearbook System. All rights reserved.
+    &copy; {{ year|default:"2025" }} AlumniTrack System. All rights reserved.
   </div>
 
   <!-- Scripts -->
