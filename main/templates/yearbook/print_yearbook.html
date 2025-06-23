@@ -5,11 +5,10 @@
   <meta charset="UTF-8">
   <title>Graduate Yearbook</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
   <style>
     @page {
       size: A4;
-      margin: 1in;
+      margin: 40px;
     }
 
     body {
@@ -21,10 +20,47 @@
       background-color: #fff;
     }
 
+    .print-header {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    .print-header-content {
+      display: flex;
+      align-items: center;
+    }
+
+    .print-header img {
+      height: 90px;
+      margin-right: 20px;
+    }
+
+    .print-header-text {
+      text-align: center;
+      flex: 1;
+    }
+
+    .print-header-text .subtitle {
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .print-header-text .university-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 2px 0;
+    }
+
+    .print-header-text .website {
+      font-size: 10px;
+      font-style: italic;
+      color: #555;
+    }
+
     h2 {
       text-align: center;
-      font-size: 24px;
-      margin: 35px 0 20px;
+      font-size: 20px;
+      margin: 10px 0 10px;
       font-weight: 700;
     }
 
@@ -35,6 +71,7 @@
       margin: 30px 0 15px;
       border-bottom: 1px solid #aaa;
       padding-bottom: 6px;
+      page-break-after: avoid;
     }
 
     .grid-container {
@@ -87,15 +124,30 @@
     }
 
     .page-break {
-      page-break-after: always;
+      page-break-before: always;
     }
   </style>
 </head>
 <body>
 
-<h2>Graduate Yearbook – Batch {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</h2>
-
 {% for course, grads in course_groups.items %}
+  <div class="page-break"></div>
+
+  <div class="print-header" style="margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+      <img src="{% static 'assets/images/school-logo.png' %}" alt="CvSU Logo" style="height: 90px;">
+      <div style="text-align: center; line-height: 1.3;">
+        <div style="font-size: 12px;">Republic of the Philippines</div>
+        <div style="font-size: 16px; font-weight: bold;">CAVITE STATE UNIVERSITY</div>
+        <div style="font-size: 13px;">NAIC CAMPUS</div>
+        <div style="font-size: 12px; font-style: italic;">(Formerly Cavite College of Fisheries)</div>
+        <div style="font-size: 11px;">Bucana Malaki, Naic, Cavite</div>
+        <div style="font-size: 10px; font-style: italic;">www.cvsu-naic.edu.ph</div>
+      </div>
+    </div>
+  </div>
+  
+  <h2>Graduate Yearbook – Batch {{ graduate.batch.from_year }}–{{ graduate.batch.to_year }} ({{ graduate.batch.batch_type }})</h2>
   <div class="course-title">{{ course }}</div>
 
   <div class="grid-container">
@@ -115,8 +167,6 @@
       </div>
     {% endfor %}
   </div>
-
-  <div class="page-break"></div>
 {% endfor %}
 
 <script>
